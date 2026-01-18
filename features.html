@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fonctionnalités | Clarity AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Mêmes styles que index.html - pour cohérence */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        nav a {
+            margin-left: 30px;
+            text-decoration: none;
+            color: var(--gray);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover, nav a.active {
+            color: var(--primary);
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            margin-bottom: 60px;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .section-title {
+            font-size: 36px;
+            margin-bottom: 40px;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .comparison {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-bottom: 60px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        
+        th, td {
+            padding: 20px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+        }
+        
+        .check {
+            color: #10b981;
+            font-size: 20px;
+        }
+        
+        .cross {
+            color: #ef4444;
+            font-size: 20px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 60px;
+            color: var(--gray);
+            border-top: 1px solid #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>Clarity AI</span>
+            </a>
+            <nav>
+                <a href="index.html">Accueil</a>
+                <a href="features.html" class="active">Fonctionnalités</a>
+                <a href="pricing.html">Tarifs</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <a href="pricing.html" class="btn">Essayer Gratuitement</a>
+        </header>
+
+        <section class="hero">
+            <h1>Des fonctionnalités pensées pour votre conformité</h1>
+            <p style="font-size: 20px; color: var(--gray); max-width: 800px; margin: 0 auto;">
+                Tout ce dont vous avez besoin pour garantir la conformité de vos systèmes d'IA
+            </p>
+        </section>
+
+        <h2 class="section-title">Nos fonctionnalités principales</h2>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>Analyse Automatique</h3>
+                <p>Analysez n'importe quel système d'IA en moins d'une minute. Notre algorithme identifie les risques AI Act et RGPD automatiquement.</p>
+                <ul style="margin-top: 20px; padding-left: 20px; color: var(--gray);">
+                    <li>Détection des systèmes à haut risque</li>
+                    <li>Identification des données sensibles</li>
+                    <li>Évaluation du niveau de conformité</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <h3>Rapports Professionnels</h3>
+                <p>Générez des rapports détaillés prêts à présenter aux autorités de régulation (CNIL, etc.)</p>
+                <ul style="margin-top: 20px; padding-left: 20px; color: var(--gray);">
+                    <li>Export PDF et Word</li>
+                    <li>Modèles personnalisables</li>
+                    <li>Traçabilité complète</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Dashboard de Suivi</h3>
+                <p>Suivez votre progression de conformité en temps réel avec des indicateurs clairs et actionnables.</p>
+                <ul style="margin-top: 20px; padding-left: 20px; color: var(--gray);">
+                    <li>Score de conformité en direct</li>
+                    <li>Alertes proactives</li>
+                    <li>Historique des analyses</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <h3>Base de Connaissances Juridique</h3>
+                <p>Accédez à une base de données constamment mise à jour avec les dernières réglementations.</p>
+                <ul style="margin-top: 20px; padding-left: 20px; color: var(--gray);">
+                    <li>AI Act (UE et France)</li>
+                    <li>RGPD et lois locales</li>
+                    <li>Jurisprudence et décisions</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Collaboration d'Équipe</h3>
+                <p>Travailler ensemble sur la conformité avec des rôles et permissions.</p>
+                <ul style="margin-top: 20px; padding-left: 20px; color: var(--gray);">
+                    <li>Multi-utilisateurs</li>
+                    <li>Commentaires et annotations</li>
+                    <li>Workflows d'approbation</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <h3>Mises à Jour Automatiques</h3>
+                <p>Restez toujours conforme avec les mises à jour automatiques des nouvelles réglementations.</p>
+                <ul style="margin-top: 20px; padding-left: 20px; color: var(--gray);">
+                    <li>Veille réglementaire automatique</li>
+                    <li>Alertes sur changements légaux</li>
+                    <li>Recommandations adaptatives</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="comparison">
+            <h2 class="section-title">Comparaison avec les solutions traditionnelles</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fonctionnalité</th>
+                        <th>Clarity AI</th>
+                        <th>Cabinet juridique traditionnel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Délai d'analyse</strong></td>
+                        <td><i class="fas fa-check check"></i> 1 minute</td>
+                        <td><i class="fas fa-times cross"></i> 2-4 semaines</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Coût moyen</strong></td>
+                        <td><i class="fas fa-check check"></i> À partir de 99€/mois</td>
+                        <td><i class="fas fa-times cross"></i> 5 000 - 20 000€/audit</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mises à jour réglementaires</strong></td>
+                        <td><i class="fas fa-check check"></i> Automatiques et gratuites</td>
+                        <td><i class="fas fa-times cross"></i> Facturées en supplément</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Accessibilité</strong></td>
+                        <td><i class="fas fa-check check"></i> 24/7 en ligne</td>
+                        <td><i class="fas fa-times cross"></i> Sur rendez-vous uniquement</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Historique et traçabilité</strong></td>
+                        <td><i class="fas fa-check check"></i> Illimité et consultable</td>
+                        <td><i class="fas fa-times cross"></i> Archives physiques limitées</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="text-align: center; padding: 60px 20px;">
+            <h2 style="font-size: 36px; margin-bottom: 20px;">Prêt à simplifier votre conformité IA ?</h2>
+            <p style="font-size: 20px; color: var(--gray); margin-bottom: 30px; max-width: 600px; margin: 0 auto 30px;">
+                Commencez gratuitement dès aujourd'hui
+            </p>
+            <a href="pricing.html" class="btn" style="font-size: 18px; padding: 18px 40px;">
+                <i class="fas fa-rocket"></i> Démarrer l'essai gratuit
+            </a>
+        </div>
+
+        <footer>
+            <p>© 2026 Clarity AI. Tous droits réservés.</p>
+            <p>Cet outil fournit une analyse préliminaire. Consultez un expert juridique pour une conformité complète.</p>
+        </footer>
+    </div>
+</body>
+</html>

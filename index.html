@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clarity AI | Analyse de Conformité AI Act & RGPD</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .logo i {
+            font-size: 28px;
+        }
+        
+        nav a {
+            margin-left: 30px;
+            text-decoration: none;
+            color: var(--gray);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--primary);
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+        }
+        
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        
+        /* Analyzer */
+        .analyzer {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border 0.3s;
+            font-family: inherit;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .btn-analyze {
+            width: 100%;
+            padding: 18px;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Result */
+        .result {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            border-left: 5px solid var(--primary);
+            display: none;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .result-actions button {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+        
+        .result-actions button:hover {
+            border-color: var(--primary);
+        }
+        
+        .result-content {
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+            line-height: 1.8;
+        }
+        
+        /* Features */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+        
+        .feature {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature i {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 60px;
+            color: var(--gray);
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav {
+                display: flex;
+                gap: 20px;
+            }
+            
+            nav a {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+               <header>
+            <a href="index.html" class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>Clarity AI</span>
+            </a>
+            <nav>
+                <a href="index.html"><i class="fas fa-home"></i> Accueil</a>
+                <a href="features.html"><i class="fas fa-chart-line"></i> Fonctionnalités</a>
+                <a href="pricing.html"><i class="fas fa-euro-sign"></i> Tarifs</a>
+                <a href="contact.html"><i class="fas fa-envelope"></i> Contact</a>
+            </nav>
+            <a href="pricing.html" class="btn">
+                <i class="fas fa-rocket"></i> Essayer Gratuitement
+            </a>
+        </header>
+
+        <section class="hero">
+            <h1>Conformité AI Act & RGPD Automatisée</h1>
+            <p>Analysez vos systèmes d'IA en temps réel. Évitez les amendes jusqu'à 7% de votre chiffre d'affaires avec notre plateforme intelligente.</p>
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-bolt"></i>
+                    <h3>Analyse en 30 secondes</h3>
+                    <p>Obtenez un rapport détaillé en moins d'une minute</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-gavel"></i>
+                    <h3>Conforme à la réglementation</h3>
+                    <p>AI Act, RGPD, Loi IA française et européenne</p>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-chart-pie"></i>
+                    <h3>Dashboard personnalisé</h3>
+                    <p>Suivez votre conformité en temps réel</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="analyzer">
+            <h2 class="section-title">
+                <i class="fas fa-search"></i> Analyseur de Conformité
+            </h2>
+            
+            <div class="form-group">
+                <label for="company">
+                    <i class="fas fa-building"></i> Nom de l'entreprise
+                </label>
+                <input type="text" id="company" class="form-control" placeholder="Ex: MaStartup SAS" value="TechInnovation">
+            </div>
+            
+            <div class="form-group">
+                <label for="text">
+                    <i class="fas fa-file-alt"></i> Décrivez votre système d'IA
+                </label>
+                <textarea id="text" class="form-control" placeholder="Décrivez en détail votre utilisation de l'intelligence artificielle...">
+Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un score de compatibilité. Le système prend des décisions automatisées de présélection. Nous collectons et stockons les données personnelles (nom, email, expérience) pendant 18 mois.
+                </textarea>
+            </div>
+            
+            <button class="btn btn-analyze" onclick="analyze()">
+                <i class="fas fa-microscope"></i> Analyser la Conformité
+            </button>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <h3>Analyse en cours...</h3>
+                <p>Notre IA examine votre texte pour identifier les risques de conformité</p>
+            </div>
+            
+            <div class="result" id="result">
+                <div class="result-header">
+                    <h3><i class="fas fa-file-contract"></i> Rapport d'Analyse</h3>
+                    <div class="result-actions">
+                        <button onclick="copyReport()">
+                            <i class="fas fa-copy"></i> Copier
+                        </button>
+                        <button onclick="exportPDF()">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <button onclick="saveReport()">
+                            <i class="fas fa-save"></i> Sauvegarder
+                        </button>
+                    </div>
+                </div>
+                <div class="result-content" id="result-content"></div>
+            </div>
+        </section>
+
+        <section class="analyzer">
+            <h2 class="section-title">
+                <i class="fas fa-lightbulb"></i> Cas d'Usage Prédéfinis
+            </h2>
+            <div class="features">
+                <div class="feature" onclick="loadExample('recrutement')">
+                    <i class="fas fa-user-tie"></i>
+                    <h3>Recrutement IA</h3>
+                    <p>Systèmes de scoring CV et filtrage automatique</p>
+                </div>
+                <div class="feature" onclick="loadExample('finance')">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Finance & Scoring</h3>
+                    <p>Évaluation de crédit et risque automatisée</p>
+                </div>
+                <div class="feature" onclick="loadExample('sante')">
+                    <i class="fas fa-heartbeat"></i>
+                    <h3>Santé & Diagnostic</h3>
+                    <p>IA médicale et analyse de données santé</p>
+                </div>
+                <div class="feature" onclick="loadExample('surveillance')">
+                    <i class="fas fa-camera"></i>
+                    <h3>Surveillance</h3>
+                    <p>Reconnaissance faciale et vidéo analytics</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2026 Clarity AI. Tous droits réservés.</p>
+            <p>Cet outil fournit une analyse préliminaire. Consultez un expert juridique pour une conformité complète.</p>
+            <p style="margin-top: 20px; font-size: 14px; color: #94a3b8;">
+                <i class="fas fa-server"></i> Serveur: localhost:3001 | 
+                <i class="fas fa-code"></i> Version: 1.0.0
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        async function analyze() {
+            const company = document.getElementById('company').value;
+            const text = document.getElementById('text').value;
+            const resultDiv = document.getElementById('result');
+            const resultContent = document.getElementById('result-content');
+            const loadingDiv = document.getElementById('loading');
+            
+            // Validation
+            if (!text.trim()) {
+                alert('Veuillez décrire votre système d\'IA');
+                return;
+            }
+            
+            // Afficher chargement
+            resultDiv.style.display = 'none';
+            loadingDiv.style.display = 'block';
+            
+            try {
+                const response = await fetch('http://localhost:3001/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        companyName: company
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Sauvegarder dans l'historique
+saveToHistory(data.analysis, company, data.analyzedAt);
+                    resultContent.textContent = data.analysis;
+                    resultDiv.style.display = 'block';
+                    
+                    // Animation
+                    resultDiv.style.opacity = '0';
+                    resultDiv.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        resultDiv.style.transition = 'all 0.5s ease';
+                        resultDiv.style.opacity = '1';
+                        resultDiv.style.transform = 'translateY(0)';
+                    }, 100);
+                } else {
+                    throw new Error(data.error || 'Erreur inconnue');
+                }
+                
+            } catch (error) {
+                resultContent.textContent = '❌ Erreur: ' + error.message + '\n\nVérifiez que le serveur est en marche (npm run dev)';
+                resultDiv.style.display = 'block';
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+        
+        function copyReport() {
+            const text = document.getElementById('result-content').textContent;
+            navigator.clipboard.writeText(text)
+                .then(() => alert('Rapport copié dans le presse-papier !'))
+                .catch(() => alert('Erreur lors de la copie'));
+        }
+        
+        function exportPDF() {
+    // Vérifier si jsPDF est chargé
+    if (typeof window.jspdf === 'undefined') {
+        alert('Erreur: Bibliothèque PDF non chargée. Réessayez.');
+        return;
+    }
+    
+    const content = document.getElementById('result-content');
+    
+    if (!content || !content.textContent.trim()) {
+        alert('Générez d\'abord un rapport en cliquant sur "Analyser la Conformité" !');
+        return;
+    }
+    
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Titre
+        doc.setFontSize(20);
+        doc.setTextColor(37, 99, 235);
+        doc.text('Rapport de Conformité AI Act & RGPD', 20, 20);
+        
+        // Infos entreprise
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        const company = document.getElementById('company').value || 'Non spécifié';
+        doc.text(`Entreprise: ${company}`, 20, 35);
+        doc.text(`Date: ${new Date().toLocaleDateString('fr-FR')}`, 20, 42);
+        doc.text(`Heure: ${new Date().toLocaleTimeString('fr-FR')}`, 20, 49);
+        
+        // Ligne de séparation
+        doc.setDrawColor(37, 99, 235);
+        doc.line(20, 55, 190, 55);
+        
+        // Contenu
+        doc.setFontSize(10);
+        const text = content.textContent;
+        const splitText = doc.splitTextToSize(text, 170);
+        
+        let y = 65;
+        const lineHeight = 7;
+        const pageHeight = 280;
+        
+        for (let i = 0; i < splitText.length; i++) {
+            if (y > pageHeight) {
+                doc.addPage();
+                y = 20;
+            }
+            doc.text(splitText[i], 20, y);
+            y += lineHeight;
+        }
+        
+        // Pied de page
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        doc.text('Généré par Clarity AI - www.clarity-ai.com', 20, 285);
+        doc.text('Analyse préliminaire - Consultez un expert juridique', 20, 290);
+        
+        // Sauvegarde
+        const filename = `conformite-ai-${company.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.pdf`;
+        doc.save(filename);
+        
+        // Feedback
+        const pdfButton = document.querySelector('button[onclick*="exportPDF"]');
+        if (pdfButton) {
+            const originalHTML = pdfButton.innerHTML;
+            pdfButton.innerHTML = '<i class="fas fa-check"></i> PDF généré !';
+            pdfButton.style.background = '#10b981';
+            setTimeout(() => {
+                pdfButton.innerHTML = originalHTML;
+                pdfButton.style.background = '';
+            }, 2000);
+        }
+        
+    } catch (error) {
+        console.error('Erreur PDF:', error);
+        alert('Erreur lors de la génération du PDF.');
+    }
+}
+        
+        function saveReport() {
+    const content = document.getElementById('result-content');
+    const company = document.getElementById('company').value || 'Non spécifié';
+    
+    if (!content || !content.textContent.trim()) {
+        alert('Générez d\'abord un rapport !');
+        return;
+    }
+    
+    // Vérifier si l'historique existe déjà
+    const history = JSON.parse(localStorage.getItem('clarityHistory') || '[]');
+    const currentReport = {
+        analysis: content.textContent,
+        company: company,
+        date: new Date().toISOString()
+    };
+    
+    // Vérifier si ce rapport existe déjà
+    const exists = history.some(report => 
+        report.fullAnalysis === currentReport.analysis && 
+        report.company === currentReport.company
+    );
+    
+    if (exists) {
+        alert('Ce rapport est déjà sauvegardé dans l\'historique !');
+        return;
+    }
+    
+    // Sauvegarder dans l'historique
+    saveToHistory(content.textContent, company, new Date().toISOString());
+    
+    // Feedback visuel
+    const saveButton = document.querySelector('button[onclick*="saveReport"]');
+    if (saveButton) {
+        const originalHTML = saveButton.innerHTML;
+        saveButton.innerHTML = '<i class="fas fa-check"></i> Sauvegardé !';
+        saveButton.style.background = '#10b981';
+        setTimeout(() => {
+            saveButton.innerHTML = originalHTML;
+            saveButton.style.background = '';
+        }, 2000);
+    }
+    
+    alert(`Rapport sauvegardé pour "${company}"\n\nAccessible via l'historique en bas de page.`);
+}
+        
+        function showDemo() {
+            document.getElementById('text').value = "Notre banque utilise un système d'IA pour détecter les fraudes sur les transactions. Le système analyse les modèles de comportement, les montants, les localisations et prend des décisions automatisées de blocage de compte. Nous traitons des données personnelles sensibles (coordonnées bancaires, historique transactionnel).";
+            document.getElementById('company').value = "BanqueEuroTech";
+            analyze();
+        }
+        
+        function loadExample(type) {
+            const examples = {
+                recrutement: {
+                    text: "Système de recrutement par IA qui analyse les CV, profils LinkedIn, et attribue un score de compatibilité. Décisions automatisées de filtrage. Conservation des données candidats pendant 2 ans.",
+                    company: "HRTech Solutions"
+                },
+                finance: {
+                    text: "Modèle de scoring de crédit automatisé basé sur l'historique bancaire, les revenus, et les données sociales. Décision d'octroi de prêt sans intervention humaine. Traitement de données financières sensibles.",
+                    company: "FinScore Pro"
+                },
+                sante: {
+                    text: "IA d'aide au diagnostic médical analysant des images radiologiques. Le système suggère des diagnostics et des traitements. Traitement de données de santé sensibles (images médicales, historiques patients).",
+                    company: "MedAI Diagnostics"
+                },
+                surveillance: {
+                    text: "Système de reconnaissance faciale pour contrôle d'accès aux bâtiments et analyse du comportement dans les espaces publics. Stockage des données biométriques pendant 3 ans pour investigations.",
+                    company: "SecureVision"
+                }
+            };
+            
+            if (examples[type]) {
+                document.getElementById('text').value = examples[type].text;
+                document.getElementById('company').value = examples[type].company;
+                analyze();
+            }
+        }
+        
+        // Vérifier que le serveur est en marche
+        window.onload = () => {
+            fetch('http://localhost:3001/health')
+                .catch(() => {
+                    document.getElementById('result-content').textContent = '⚠️ Serveur non disponible. Lancez-le avec: npm run dev';
+                    document.getElementById('result').style.display = 'block';
+                });
+        };
+        // ==================== HISTORIQUE LOCAL ====================
+
+function saveToHistory(analysis, company, date) {
+    try {
+        // Récupérer l'historique existant
+        const history = JSON.parse(localStorage.getItem('clarityHistory') || '[]');
+        
+        // Créer un nouveau rapport
+        const report = {
+            id: Date.now(),
+            date: date || new Date().toISOString(),
+            company: company,
+            preview: analysis.substring(0, 150) + '...',
+            fullAnalysis: analysis,
+            timestamp: new Date().getTime()
+        };
+        
+        // Ajouter au début de la liste
+        history.unshift(report);
+        
+        // Garder maximum 20 rapports
+        if (history.length > 20) {
+            history.pop();
+        }
+        
+        // Sauvegarder
+        localStorage.setItem('clarityHistory', JSON.stringify(history));
+        
+        // Mettre à jour l'UI
+        updateHistoryUI();
+        
+    } catch (error) {
+        console.error('Erreur sauvegarde historique:', error);
+    }
+}
+
+function updateHistoryUI() {
+    const history = JSON.parse(localStorage.getItem('clarityHistory') || '[]');
+    const historyContainer = document.getElementById('history-container');
+    
+    if (!historyContainer) return;
+    
+    if (history.length === 0) {
+        historyContainer.innerHTML = '<p style="color: #64748b; text-align: center; padding: 20px;">Aucun rapport sauvegardé</p>';
+        return;
+    }
+    
+    let html = '<h3 style="margin-bottom: 15px; color: #1e293b;"><i class="fas fa-history"></i> Historique des analyses</h3>';
+    
+    history.forEach((report, index) => {
+        const date = new Date(report.date).toLocaleDateString('fr-FR');
+        const time = new Date(report.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        
+        html += `
+        <div class="history-item" onclick="loadHistoryReport(${report.id})" style="
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #2563eb;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        ">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <strong style="color: #1e293b;">${report.company}</strong>
+                    <p style="color: #64748b; font-size: 14px; margin: 5px 0;">${report.preview}</p>
+                </div>
+                <div style="text-align: right;">
+                    <small style="color: #94a3b8; display: block;">${date}</small>
+                    <small style="color: #94a3b8;">${time}</small>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button onclick="event.stopPropagation(); deleteHistoryItem(${report.id})" style="
+                    background: #fef2f2;
+                    color: #dc2626;
+                    border: none;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    cursor: pointer;
+                ">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button onclick="event.stopPropagation(); exportHistoryPDF(${report.id})" style="
+                    background: #f0f9ff;
+                    color: #2563eb;
+                    border: none;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    cursor: pointer;
+                ">
+                    <i class="fas fa-file-pdf"></i>
+                </button>
+            </div>
+        </div>
+        `;
+    });
+    
+    historyContainer.innerHTML = html;
+}
+
+function loadHistoryReport(id) {
+    const history = JSON.parse(localStorage.getItem('clarityHistory') || '[]');
+    const report = history.find(r => r.id === id);
+    
+    if (report) {
+        // Afficher le rapport
+        document.getElementById('result-content').textContent = report.fullAnalysis;
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('company').value = report.company;
+        
+        // Scroll vers le résultat
+        document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        
+        // Notification
+        alert(`Rapport de ${report.company} chargé depuis l'historique`);
+    }
+}
+
+function deleteHistoryItem(id) {
+    if (confirm('Supprimer ce rapport de l\'historique ?')) {
+        const history = JSON.parse(localStorage.getItem('clarityHistory') || '[]');
+        const newHistory = history.filter(r => r.id !== id);
+        localStorage.setItem('clarityHistory', JSON.stringify(newHistory));
+        updateHistoryUI();
+    }
+}
+
+function exportHistoryPDF(id) {
+    const history = JSON.parse(localStorage.getItem('clarityHistory') || '[]');
+    const report = history.find(r => r.id === id);
+    
+    if (report) {
+        // Simuler l'affichage pour l'export
+        const tempContent = document.getElementById('result-content').textContent;
+        document.getElementById('result-content').textContent = report.fullAnalysis;
+        document.getElementById('company').value = report.company;
+        
+        exportPDF();
+        
+        // Restaurer le contenu original
+        setTimeout(() => {
+            document.getElementById('result-content').textContent = tempContent;
+        }, 100);
+    }
+}
+
+function clearAllHistory() {
+    if (confirm('Supprimer tout l\'historique ? Cette action est irréversible.')) {
+        localStorage.removeItem('clarityHistory');
+        updateHistoryUI();
+    }
+}
+
+// ==================== INITIALISATION ====================
+
+// Au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    // Créer le container d'historique s'il n'existe pas
+    const analyzer = document.querySelector('.analyzer');
+    if (analyzer && !document.getElementById('history-container')) {
+        const historyHTML = `
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e2e8f0;">
+            <div id="history-container"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="clearAllHistory()" style="
+                    background: #fef2f2;
+                    color: #dc2626;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-size: 14px;
+                ">
+                    <i class="fas fa-trash-alt"></i> Effacer tout l'historique
+                </button>
+            </div>
+        </div>
+        `;
+        analyzer.insertAdjacentHTML('beforeend', historyHTML);
+    }
+    
+    // Charger l'historique
+    updateHistoryUI();
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarifs | Clarity AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        nav a {
+            margin-left: 30px;
+            text-decoration: none;
+            color: var(--gray);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover, nav a.active {
+            color: var(--primary);
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            margin-bottom: 60px;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+            position: relative;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .pricing-card.popular {
+            border: 3px solid var(--primary);
+            transform: scale(1.05);
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .plan-name {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .plan-price {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .plan-period {
+            font-size: 16px;
+            color: var(--gray);
+        }
+        
+        .plan-features {
+            list-style: none;
+            margin: 30px 0;
+        }
+        
+        .plan-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .plan-features li i {
+            color: var(--success);
+        }
+        
+        .btn-pricing {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        
+        .btn-pricing:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-pricing.secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-pricing.secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .faq {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-bottom: 60px;
+        }
+        
+        .faq h2 {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 40px;
+            color: var(--dark);
+        }
+        
+        .faq-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 20px;
+        }
+        
+        .faq-question {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            color: var(--gray);
+            display: none;
+        }
+        
+        .faq-answer.show {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 60px;
+            color: var(--gray);
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        @media (max-width: 768px) {
+            .pricing-card.popular {
+                transform: none;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+            
+            nav a {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>Clarity AI</span>
+            </a>
+            <nav>
+                <a href="index.html">Accueil</a>
+                <a href="features.html">Fonctionnalités</a>
+                <a href="pricing.html" class="active">Tarifs</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            <a href="#contact" class="btn-pricing" style="width: auto; padding: 12px 28px;">
+                <i class="fas fa-phone"></i> Nous contacter
+            </a>
+        </header>
+
+        <section class="hero">
+            <h1>Des tarifs transparents, sans surprise</h1>
+            <p style="font-size: 20px; color: var(--gray); max-width: 700px; margin: 0 auto;">
+                Choisissez la formule qui correspond à vos besoins. Aucun engagement, annulation à tout moment.
+            </p>
+        </section>
+
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3 class="plan-name">Découverte</h3>
+                <div class="plan-price">Gratuit</div>
+                <p class="plan-period">Pour tester la plateforme</p>
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> 1 analyse par mois</li>
+                    <li><i class="fas fa-check"></i> Rapport basique</li>
+                    <li><i class="fas fa-check"></i> Support par email</li>
+                    <li><i class="fas fa-times" style="color: var(--danger);"></i> Export PDF</li>
+                    <li><i class="fas fa-times" style="color: var(--danger);"></i> Historique illimité</li>
+                    <li><i class="fas fa-times" style="color: var(--danger);"></i> Support prioritaire</li>
+                </ul>
+                <button class="btn-pricing secondary" onclick="signup('free')">
+                    Commencer gratuitement
+                </button>
+            </div>
+            
+            <div class="pricing-card popular">
+                <div class="popular-badge">Le plus populaire</div>
+                <h3 class="plan-name">Startup</h3>
+                <div class="plan-price">99€<span class="plan-period">/mois</span></div>
+                <p class="plan-period">Facturé annuellement : 999€/an (économisez 189€)</p>
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> 50 analyses par mois</li>
+                    <li><i class="fas fa-check"></i> Rapports détaillés</li>
+                    <li><i class="fas fa-check"></i> Export PDF & Word</li>
+                    <li><i class="fas fa-check"></i> Historique 12 mois</li>
+                    <li><i class="fas fa-check"></i> Support chat</li>
+                    <li><i class="fas fa-times" style="color: var(--danger);"></i> Audit personnalisé</li>
+                </ul>
+                <button class="btn-pricing" onclick="signup('startup')">
+                    Choisir cette offre
+                </button>
+            </div>
+            
+            <div class="pricing-card">
+                <h3 class="plan-name">Enterprise</h3>
+                <div class="plan-price">499€<span class="plan-period">/mois</span></div>
+                <p class="plan-period">Facturé annuellement : 4 999€/an (économisez 989€)</p>
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Analyses illimitées</li>
+                    <li><i class="fas fa-check"></i> Rapports personnalisés</li>
+                    <li><i class="fas fa-check"></i> API complète</li>
+                    <li><i class="fas fa-check"></i> Historique illimité</li>
+                    <li><i class="fas fa-check"></i> Support 24/7</li>
+                    <li><i class="fas fa-check"></i> Audit personnalisé inclus</li>
+                </ul>
+                <button class="btn-pricing secondary" onclick="signup('enterprise')">
+                    Contactez-nous
+                </button>
+            </div>
+        </div>
+
+        <div class="faq">
+            <h2>Questions fréquentes</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(1)">
+                    Puis-je changer de formule à tout moment ?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer" id="faq-1">
+                    Oui, vous pouvez passer d'une formule à une autre à tout moment. La différence de prix sera proratisée.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(2)">
+                    Y a-t-il un engagement ?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer" id="faq-2">
+                    Non, tous nos abonnements sont sans engagement. Vous pouvez annuler à tout moment.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(3)">
+                    Les données sont-elles sécurisées ?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer" id="faq-3">
+                    Oui, toutes les données sont chiffrées et hébergées en France. Nous sommes certifiés RGPD.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(4)">
+                    Puis-je tester avant de payer ?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer" id="faq-4">
+                    Bien sûr ! La formule Découverte est entièrement gratuite et ne nécessite pas de carte bancaire.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(5)">
+                    Proposez-vous des tarifs pour les associations ?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer" id="faq-5">
+                    Oui, nous avons des tarifs préférentiels pour les associations, ONG et institutions publiques. Contactez-nous.
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 20px; color: white;">
+            <h2 style="font-size: 36px; margin-bottom: 20px;">Prêt à garantir votre conformité IA ?</h2>
+            <p style="font-size: 20px; margin-bottom: 30px; max-width: 600px; margin: 0 auto 30px; opacity: 0.9;">
+                Rejoignez les 500+ entreprises qui nous font déjà confiance
+            </p>
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn-pricing" style="background: white; color: var(--primary);" onclick="signup('startup')">
+                    <i class="fas fa-rocket"></i> Essayer 14 jours gratuitement
+                </button>
+                <button class="btn-pricing secondary" style="border-color: white; color: white;" onclick="window.location.href='contact.html'">
+                    <i class="fas fa-calendar"></i> Réserver une démo
+                </button>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2026 Clarity AI. Tous droits réservés.</p>
+            <p>Cet outil fournit une analyse préliminaire. Consultez un expert juridique pour une conformité complète.</p>
+        </footer>
+    </div>
+
+    <script>
+        function signup(plan) {
+            if (plan === 'free') {
+                alert('Redirection vers la page d\'inscription gratuite...');
+                // window.location.href = 'signup.html?plan=free';
+            } else if (plan === 'startup') {
+                alert('Redirection vers la page d\'inscription Startup (99€/mois)...');
+                // window.location.href = 'signup.html?plan=startup';
+            } else {
+                window.location.href = 'contact.html';
+            }
+        }
+        
+        function toggleFAQ(id) {
+            const answer = document.getElementById(`faq-${id}`);
+            answer.classList.toggle('show');
+        }
+        
+        // Ouvrir la première FAQ par défaut
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleFAQ(1);
+        });
+    </script>
+</body>
+</html>
