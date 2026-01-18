@@ -1,4 +1,4 @@
-=<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -6,6 +6,7 @@
     <title>Clarity AI | Conformité AI Act & RGPD</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --primary: #2563eb;
@@ -252,6 +253,70 @@
             margin-bottom: 20px;
         }
 
+        /* Historique */
+        .history-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-bottom: 40px;
+        }
+
+        .history-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .history-item {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .history-item:hover {
+            transform: translateX(5px);
+            background: #e0f2fe;
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .history-item-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .history-item-actions button {
+            padding: 5px 12px;
+            font-size: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-export {
+            background: #dbeafe;
+            color: var(--primary);
+        }
+
         footer {
             text-align: center;
             padding: 40px 0;
@@ -356,6 +421,19 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
             </div>
         </section>
 
+        <!-- Section Historique -->
+        <section class="history-section">
+            <h2 class="section-title">
+                <i class="fas fa-history"></i> Historique des Analyses
+            </h2>
+            <button class="btn" onclick="clearHistory()" style="margin-bottom: 20px;">
+                <i class="fas fa-trash"></i> Effacer l'historique
+            </button>
+            <div class="history-container" id="history-container">
+                <!-- Les éléments d'historique seront insérés ici par JavaScript -->
+            </div>
+        </section>
+
         <section class="analyzer">
             <h2 class="section-title">
                 <i class="fas fa-lightbulb"></i> Exemples Prédéfinis
@@ -447,6 +525,9 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
                         resultDiv.style.transform = 'translateY(0)';
                     }, 100);
                     
+                    // Sauvegarder dans l'historique
+                    saveToHistory(data.analysis, company, data.analyzedAt);
+                    
                 } else {
                     throw new Error(data.error || 'Erreur serveur');
                 }
@@ -470,6 +551,10 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
                     <p><em>Note : Cette analyse est générée en mode démo. La connexion avec l'API IA est disponible en production.</em></p>
                 `;
                 resultDiv.style.display = 'block';
+                
+                // Sauvegarder aussi le mode démo dans l'historique
+                const demoAnalysis = `Rapport de conformité AI Act (Mode démo)\nEntreprise: ${company}\nSystème analysé: "${text.substring(0, 100)}${text.length > 100 ? '...' : ''}"\nNiveau de risque: MOYEN\nArticles AI Act concernés: Article 6, Article 10, Article 13\nRecommandations:\n1. Documentation technique du système\n2. Évaluation d'impact sur la protection des données (DPIA)\n3. Mise en place de mécanismes de transparence\n4. Audit régulier des algorithmes`;
+                saveToHistory(demoAnalysis, company, new Date().toISOString());
             } finally {
                 // Réinitialiser l'interface
                 loadingDiv.style.display = 'none';
@@ -482,16 +567,113 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
         function copyReport() {
             const text = document.getElementById('result-content').textContent;
             navigator.clipboard.writeText(text)
-                .then(() => alert('✅ Rapport copié dans le presse-papier !'))
+                .then(() => {
+                    alert('✅ Rapport copié dans le presse-papier !');
+                })
                 .catch(() => alert('❌ Erreur lors de la copie'));
         }
         
         function exportPDF() {
-            alert('📄 Fonction PDF - Version pro uniquement');
+            if (typeof window.jspdf === 'undefined') {
+                alert('Erreur: Bibliothèque PDF non chargée. Veuillez réessayer.');
+                return;
+            }
+            
+            const content = document.getElementById('result-content');
+            
+            if (!content || !content.textContent.trim()) {
+                alert('Générez d\'abord un rapport en cliquant sur "Analyser la Conformité" !');
+                return;
+            }
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.setFontSize(20);
+                doc.setTextColor(37, 99, 235);
+                doc.text('Rapport de Conformité AI Act & RGPD', 20, 20);
+                
+                doc.setFontSize(12);
+                doc.setTextColor(0, 0, 0);
+                const company = document.getElementById('company').value || 'Non spécifié';
+                doc.text(`Entreprise: ${company}`, 20, 35);
+                doc.text(`Date: ${new Date().toLocaleDateString('fr-FR')}`, 20, 42);
+                doc.text(`Heure: ${new Date().toLocaleTimeString('fr-FR')}`, 20, 49);
+                
+                doc.setDrawColor(37, 99, 235);
+                doc.line(20, 55, 190, 55);
+                
+                doc.setFontSize(10);
+                const text = content.textContent;
+                const splitText = doc.splitTextToSize(text, 170);
+                
+                let y = 65;
+                const lineHeight = 7;
+                const pageHeight = 280;
+                
+                for (let i = 0; i < splitText.length; i++) {
+                    if (y > pageHeight) {
+                        doc.addPage();
+                        y = 20;
+                    }
+                    doc.text(splitText[i], 20, y);
+                    y += lineHeight;
+                }
+                
+                doc.setFontSize(8);
+                doc.setTextColor(100, 100, 100);
+                doc.text('Généré par Clarity AI - www.clarity-ai.com', 20, 285);
+                doc.text('Analyse préliminaire - Consultez un expert juridique', 20, 290);
+                
+                const filename = `conformite-ai-${company.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.pdf`;
+                doc.save(filename);
+                
+                // Feedback visuel
+                const pdfButton = document.querySelector('button[onclick="exportPDF()"]');
+                if (pdfButton) {
+                    const originalHTML = pdfButton.innerHTML;
+                    pdfButton.innerHTML = '<i class="fas fa-check"></i> PDF généré !';
+                    pdfButton.style.background = '#10b981';
+                    pdfButton.style.color = 'white';
+                    setTimeout(() => {
+                        pdfButton.innerHTML = originalHTML;
+                        pdfButton.style.background = '';
+                        pdfButton.style.color = '';
+                    }, 2000);
+                }
+                
+            } catch (error) {
+                console.error('Erreur PDF:', error);
+                alert('Erreur lors de la génération du PDF.');
+            }
         }
         
         function saveReport() {
-            alert('💾 Fonction sauvegarde - Version pro uniquement');
+            const content = document.getElementById('result-content');
+            const company = document.getElementById('company').value || 'Non spécifié';
+            
+            if (!content || !content.textContent.trim()) {
+                alert('Générez d\'abord un rapport !');
+                return;
+            }
+            
+            saveToHistory(content.textContent, company, new Date().toISOString());
+            
+            const saveButton = document.querySelector('button[onclick="saveReport()"]');
+            if (saveButton) {
+                const originalHTML = saveButton.innerHTML;
+                saveButton.innerHTML = '<i class="fas fa-check"></i> Sauvegardé !';
+                saveButton.style.background = '#10b981';
+                saveButton.style.color = 'white';
+                setTimeout(() => {
+                    saveButton.innerHTML = originalHTML;
+                    saveButton.style.background = '';
+                    saveButton.style.color = '';
+                }, 2000);
+            }
+            
+            alert(`Rapport sauvegardé pour "${company}"\n\nAccessible via l'historique en bas de page.`);
         }
         
         // ==================== EXEMPLES PRÉDÉFINIS ====================
@@ -522,10 +704,157 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
             }
         }
 
+        // ==================== HISTORIQUE LOCAL ====================
+        function saveToHistory(analysis, company, date) {
+            try {
+                const history = JSON.parse(localStorage.getItem('clarityHistory') || '[]');
+                
+                const report = {
+                    id: Date.now(),
+                    date: date || new Date().toISOString(),
+                    company: company,
+                    preview: analysis.substring(0, 150) + '...',
+                    fullAnalysis: analysis,
+                    timestamp: new Date().getTime()
+                };
+                
+                history.unshift(report);
+                
+                // Garder seulement les 20 derniers rapports
+                if (history.length > 20) {
+                    history.pop();
+                }
+                
+                localStorage.setItem('clarityHistory', JSON.stringify(history));
+                
+                updateHistoryUI();
+                
+            } catch (error) {
+                console.error('Erreur sauvegarde historique:', error);
+            }
+        }
+
+        function updateHistoryUI() {
+            const history = JSON.parse(localStorage.getItem('clarityHistory') || '[]');
+            const historyContainer = document.getElementById('history-container');
+            
+            if (!historyContainer) return;
+            
+            if (history.length === 0) {
+                historyContainer.innerHTML = '<p style="color: #64748b; text-align: center; padding: 20px;">Aucun rapport sauvegardé</p>';
+                return;
+            }
+            
+            let html = '';
+            
+            history.forEach((report) => {
+                const date = new Date(report.date).toLocaleDateString('fr-FR');
+                const time = new Date(report.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                
+                html += `
+                <div class="history-item">
+                    <div class="history-item-header">
+                        <div>
+                            <strong style="color: #1e293b;">${report.company}</strong>
+                            <p style="color: #64748b; font-size: 14px; margin-top: 5px;">${report.preview}</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <small style="color: #94a3b8; display: block;">${date}</small>
+                            <small style="color: #94a3b8;">${time}</small>
+                        </div>
+                    </div>
+                    <div class="history-item-actions">
+                        <button class="btn-delete" onclick="event.stopPropagation(); deleteHistoryItem(${report.id})">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                        <button class="btn-export" onclick="event.stopPropagation(); exportHistoryPDF(${report.id})">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                        <button style="background: #d1fae5; color: #065f46;" onclick="event.stopPropagation(); loadHistoryReport(${report.id})">
+                            <i class="fas fa-eye"></i> Voir
+                        </button>
+                    </div>
+                </div>
+                `;
+            });
+            
+            historyContainer.innerHTML = html;
+        }
+
+        function loadHistoryReport(id) {
+            const history = JSON.parse(localStorage.getItem('clarityHistory') || '[]');
+            const report = history.find(r => r.id === id);
+            
+            if (report) {
+                document.getElementById('result-content').textContent = report.fullAnalysis;
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('company').value = report.company;
+                
+                // Scroll vers le résultat
+                document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+                
+                alert(`Rapport de ${report.company} chargé depuis l'historique`);
+            }
+        }
+
+        function deleteHistoryItem(id) {
+            if (confirm('Supprimer ce rapport de l\'historique ?')) {
+                const history = JSON.parse(localStorage.getItem('clarityHistory') || '[]');
+                const newHistory = history.filter(r => r.id !== id);
+                localStorage.setItem('clarityHistory', JSON.stringify(newHistory));
+                updateHistoryUI();
+            }
+        }
+
+        function exportHistoryPDF(id) {
+            const history = JSON.parse(localStorage.getItem('clarityHistory') || '[]');
+            const report = history.find(r => r.id === id);
+            
+            if (report) {
+                // Sauvegarder le contenu actuel temporairement
+                const currentContent = document.getElementById('result-content').textContent;
+                const currentCompany = document.getElementById('company').value;
+                
+                // Mettre le rapport historique dans l'interface
+                document.getElementById('result-content').textContent = report.fullAnalysis;
+                document.getElementById('company').value = report.company;
+                
+                // Générer le PDF
+                exportPDF();
+                
+                // Restaurer le contenu précédent
+                setTimeout(() => {
+                    document.getElementById('result-content').textContent = currentContent;
+                    document.getElementById('company').value = currentCompany;
+                }, 100);
+            }
+        }
+
+        function clearHistory() {
+            if (confirm('Supprimer tout l\'historique ? Cette action est irréversible.')) {
+                localStorage.removeItem('clarityHistory');
+                updateHistoryUI();
+            }
+        }
+
         // ==================== INITIALISATION ====================
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Clarity AI - Frontend initialisé');
             console.log('🌐 API: https://clarity-ai-4zhg.onrender.com');
+            
+            // Charger l'historique
+            updateHistoryUI();
+            
+            // Test de connexion silencieux à l'API
+            fetch(API_BASE_URL)
+                .then(response => {
+                    if (response.ok) {
+                        console.log('✅ API Render connectée avec succès');
+                    }
+                })
+                .catch(error => {
+                    console.warn('⚠️ API Render temporairement inaccessible');
+                });
         });
     </script>
 </body>
