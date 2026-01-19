@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Dashboard - Clarity AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            /* Dashboard mobile */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .container {
+                padding: 0;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .logo {
+                font-size: 20px;
+            }
+            
+            .dashboard {
+                padding: 25px 20px;
+                border-radius: 15px;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+                padding: 20px;
+            }
+            
+            .user-info > div {
+                width: 100%;
+            }
+            
+            .user-info > div:last-child {
+                text-align: left;
+                border-top: 1px solid #e2e8f0;
+                padding-top: 15px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            h2 {
+                font-size: 20px;
+            }
+            
+            .analysis-card {
+                padding: 15px;
+            }
+            
+            .analysis-card > div:first-child {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .analysis-card .buttons {
+                display: flex;
+                gap: 10px;
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                width: 100%;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .dashboard {
+                padding: 20px 15px;
+            }
+            
+            .analysis-card {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            h2 {
+                font-size: 18px;
+            }
+        }
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #2563eb;
+            text-decoration: none;
+        }
+        
+        .dashboard {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+        
+        .user-info {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .analysis-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .analysis-card:hover {
+            border-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.1);
+        }
+        
+        .btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>Clarity AI</span>
+            </a>
+            <a href="index.html" class="btn">
+                <i class="fas fa-plus"></i> Nouvelle analyse
+            </a>
+        </header>
+        
+        <div class="dashboard">
+            <h1 style="margin-bottom: 30px; color: #1e293b;">
+                <i class="fas fa-chart-line"></i> Mon Dashboard
+            </h1>
+            
+            <div class="user-info">
+                <div>
+                    <h3 id="user-name">Chargement...</h3>
+                    <p id="user-email" style="color: #64748b; margin-top: 5px;"></p>
+                </div>
+                                <div style="text-align: right;">
+                    <p style="color: #64748b;">Plan: <strong style="color: #10b981;">Gratuit</strong></p>
+                    <p style="color: #64748b; margin-top: 5px;">
+                        <i class="fas fa-chart-bar"></i> Analyses: <strong id="analysis-count">0</strong>
+                    </p>
+                </div>
+            </div>
+            
+            <h2 style="margin-bottom: 20px; color: #1e293b;">
+                <i class="fas fa-history"></i> Historique des analyses
+            </h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div></div>
+                <button onclick="exportAllCSV()" style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-file-csv"></i> Exporter tout en CSV
+                </button>
+            </div>
+            <div id="analyses-list">
+                <!-- Les analyses seront ajoutées ici par JavaScript -->
+                <p style="text-align: center; padding: 40px; color: #94a3b8;">
+                    Chargement de vos analyses...
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Charger les données de l'utilisateur
+        const userStr = localStorage.getItem('clarity_user');
+        const analysesStr = localStorage.getItem('clarity_analyses');
+        
+        if (!userStr) {
+            // Rediriger vers la page d'accueil si pas connecté
+            window.location.href = 'index.html';
+        } else {
+            const user = JSON.parse(userStr);
+            document.getElementById('user-name').textContent = user.name;
+            document.getElementById('user-email').textContent = user.email;
+            // Afficher le compteur d'analyses
+if (analysesStr) {
+    const analyses = JSON.parse(analysesStr);
+    document.getElementById('analysis-count').textContent = analyses.length;
+}
+        }
+        
+        // Afficher les analyses
+        if (analysesStr) {
+            const analyses = JSON.parse(analysesStr);
+            const analysesList = document.getElementById('analyses-list');
+            
+            if (analyses.length === 0) {
+                analysesList.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <i class="fas fa-file-alt" style="font-size: 48px; color: #94a3b8; margin-bottom: 20px;"></i>
+                        <p style="color: #64748b;">Aucune analyse enregistrée</p>
+                        <a href="index.html" class="btn" style="margin-top: 20px;">
+                            <i class="fas fa-plus"></i> Faire ma première analyse
+                        </a>
+                    </div>
+                `;
+            } else {
+                let html = '';
+                analyses.forEach(analysis => {
+                    const date = new Date(analysis.date);
+                    const formattedDate = date.toLocaleDateString('fr-FR', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                                      html += `
+                        <div class="analysis-card">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
+                                <div>
+                                    <h4 style="color: #1e293b;">${analysis.company}</h4>
+                                    <p style="color: #64748b; font-size: 14px;">
+                                        <i class="far fa-clock"></i> ${formattedDate}
+                                    </p>
+                                </div>
+                                <div class="buttons" style="display: flex; gap: 10px;">
+                                    <button onclick="exportSingleCSV(${analysis.id})" title="Exporter cette analyse" style="background: none; border: none; color: #2563eb; cursor: pointer; font-size: 16px; padding: 5px;">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button onclick="deleteAnalysis(${analysis.id})" title="Supprimer" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 16px; padding: 5px;">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <p style="color: #475569; margin-top: 10px;">
+                                ${analysis.summary || 'Aucun résumé disponible'}
+                            </p>
+                        </div>
+                    `;
+                });
+                
+                analysesList.innerHTML = html;
+            }
+        }
+                function exportAllCSV() {
+            const analysesStr = localStorage.getItem('clarity_analyses');
+            if (!analysesStr || JSON.parse(analysesStr).length === 0) {
+                alert('Aucune analyse à exporter');
+                return;
+            }
+            
+            const analyses = JSON.parse(analysesStr);
+            let csv = 'ID,Date,Entreprise,Résumé,Contenu\n';
+            
+            analyses.forEach(analysis => {
+                const date = new Date(analysis.date).toLocaleDateString('fr-FR');
+                const summary = (analysis.summary || '').replace(/,/g, ';').replace(/\n/g, ' ');
+                const content = (analysis.content || '').replace(/,/g, ';').replace(/\n/g, ' ').substring(0, 500);
+                csv += `${analysis.id},${date},"${analysis.company}","${summary}","${content}"\n`;
+            });
+            
+            // Créer et télécharger le fichier
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'toutes-mes-analyses.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('📊 Toutes vos analyses ont été exportées en CSV !');
+        }
+                function exportSingleCSV(analysisId) {
+            const analysesStr = localStorage.getItem('clarity_analyses');
+            if (!analysesStr) {
+                alert('Aucune analyse trouvée');
+                return;
+            }
+            
+            const analyses = JSON.parse(analysesStr);
+            const analysis = analyses.find(a => a.id === analysisId);
+            
+            if (!analysis) {
+                alert('Analyse non trouvée');
+                return;
+            }
+            
+            const date = new Date(analysis.date).toLocaleDateString('fr-FR');
+            let csv = 'ID,Date,Entreprise,Résumé,Contenu\n';
+            const summary = (analysis.summary || '').replace(/,/g, ';').replace(/\n/g, ' ');
+            const content = (analysis.content || '').replace(/,/g, ';').replace(/\n/g, ' ');
+            
+            csv += `${analysis.id},${date},"${analysis.company}","${summary}","${content}"\n`;
+            
+            // Créer et télécharger le fichier
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `analyse-${analysis.company}-${date}.csv`.replace(/\//g, '-'));
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`📊 Analyse "${analysis.company}" exportée !`);
+        }
+                function exportSingleCSV(analysisId) {
+            const analysesStr = localStorage.getItem('clarity_analyses');
+            if (!analysesStr) {
+                alert('Aucune analyse trouvée');
+                return;
+            }
+            
+            const analyses = JSON.parse(analysesStr);
+            const analysis = analyses.find(a => a.id === analysisId);
+            
+            if (!analysis) {
+                alert('Analyse non trouvée');
+                return;
+            }
+            
+            const date = new Date(analysis.date).toLocaleDateString('fr-FR');
+            let csv = 'ID,Date,Entreprise,Résumé,Contenu\n';
+            const summary = (analysis.summary || '').replace(/,/g, ';').replace(/\n/g, ' ');
+            const content = (analysis.content || '').replace(/,/g, ';').replace(/\n/g, ' ');
+            
+            csv += `${analysis.id},${date},"${analysis.company}","${summary}","${content}"\n`;
+            
+            // Créer et télécharger le fichier
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `analyse-${analysis.company}-${date}.csv`.replace(/\//g, '-'));
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`📊 Analyse "${analysis.company}" exportée !`);
+        }
+        
+        function deleteAnalysis(id) {
+            if (confirm('Supprimer cette analyse ?')) {
+                const analysesStr = localStorage.getItem('clarity_analyses');
+                if (analysesStr) {
+                    let analyses = JSON.parse(analysesStr);
+                    analyses = analyses.filter(a => a.id !== id);
+                    localStorage.setItem('clarity_analyses', JSON.stringify(analyses));
+                    location.reload();
+                }
+            }
+        }
+        
+       
+    </script>
+</body>
+</html>
