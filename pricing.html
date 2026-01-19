@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tarifs | Clarity AI</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="description" content="Tarifs transparents de Clarity AI. Formules Starter (199€), Professionnel (699€) et Enterprise (2.499€) pour la conformité IA. Évitez les amendes de millions.">
+    <meta name="keywords" content="tarifs, prix, abonnement, IA, conformité, RGPD, AI Act, audit, certification">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
     <style>
         :root {
             --primary: #2563eb;
@@ -82,9 +84,44 @@
             -webkit-text-fill-color: transparent;
         }
         
+        .calculator {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px auto;
+            max-width: 800px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        
+        .comparison-grid {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .comparison-item {
+            padding: 25px;
+            border-radius: 12px;
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .comparison-consultant {
+            border: 2px solid var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+        }
+        
+        .comparison-ai {
+            border: 2px solid var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
         .pricing-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 30px;
             margin-bottom: 60px;
         }
@@ -105,6 +142,13 @@
         .pricing-card.popular {
             border: 3px solid var(--primary);
             transform: scale(1.05);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2); }
+            50% { box-shadow: 0 10px 40px rgba(37, 99, 235, 0.4); }
+            100% { box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2); }
         }
         
         .popular-badge {
@@ -129,13 +173,25 @@
         .plan-price {
             font-size: 48px;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             color: var(--dark);
         }
         
         .plan-period {
             font-size: 16px;
             color: var(--gray);
+            margin-bottom: 20px;
+        }
+        
+        .savings-badge {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
         }
         
         .plan-features {
@@ -144,15 +200,19 @@
         }
         
         .plan-features li {
-            padding: 10px 0;
+            padding: 12px 0;
             border-bottom: 1px solid #e2e8f0;
             display: flex;
             align-items: center;
             gap: 10px;
         }
         
-        .plan-features li i {
+        .plan-features li i.fa-check {
             color: var(--success);
+        }
+        
+        .plan-features li i.fa-times {
+            color: var(--danger);
         }
         
         .btn-pricing {
@@ -174,6 +234,11 @@
             transform: translateY(-2px);
         }
         
+        .btn-pricing:focus {
+            outline: 3px solid var(--primary);
+            outline-offset: 2px;
+        }
+        
         .btn-pricing.secondary {
             background: white;
             color: var(--primary);
@@ -183,6 +248,28 @@
         .btn-pricing.secondary:hover {
             background: var(--primary);
             color: white;
+        }
+        
+        .btn-contact {
+            background: white;
+            color: var(--primary);
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-contact:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
         }
         
         .faq {
@@ -215,15 +302,63 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .faq-question:hover {
+            background: rgba(37, 99, 235, 0.05);
+        }
+        
+        .faq-question:focus {
+            outline: 2px solid var(--primary);
+        }
+        
+        .faq-question i {
+            transition: transform 0.3s;
         }
         
         .faq-answer {
             color: var(--gray);
             display: none;
+            padding: 0 10px;
+            line-height: 1.8;
         }
         
         .faq-answer.show {
             display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .cta-section {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 60px;
+        }
+        
+        .clients-logos {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin: 40px 0;
+            opacity: 0.8;
+        }
+        
+        .client-logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            opacity: 0.9;
         }
         
         footer {
@@ -232,6 +367,21 @@
             margin-top: 60px;
             color: var(--gray);
             border-top: 1px solid #e2e8f0;
+        }
+        
+        .footer-links {
+            margin: 20px 0;
+        }
+        
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            margin: 0 15px;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
         }
         
         @media (max-width: 768px) {
@@ -254,6 +404,42 @@
             nav a {
                 margin: 0;
             }
+            
+            .hero h1 {
+                font-size: 32px;
+            }
+            
+            .plan-price {
+                font-size: 36px;
+            }
+            
+            .comparison-grid {
+                flex-direction: column;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-pricing {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .pricing-card {
+                padding: 25px;
+            }
+            
+            .faq {
+                padding: 25px;
+            }
+            
+            .calculator {
+                padding: 25px;
+            }
         }
     </style>
 </head>
@@ -270,68 +456,104 @@
                 <a href="pricing.html" class="active">Tarifs</a>
                 <a href="contact.html">Contact</a>
             </nav>
-            <a href="#contact" class="btn-pricing" style="width: auto; padding: 12px 28px;">
+            <a href="contact.html" class="btn-contact">
                 <i class="fas fa-phone"></i> Nous contacter
             </a>
         </header>
 
         <section class="hero">
-            <h1>Des tarifs transparents, sans surprise</h1>
-            <p style="font-size: 20px; color: var(--gray); max-width: 700px; margin: 0 auto;">
-                Choisissez la formule qui correspond à vos besoins. Aucun engagement, annulation à tout moment.
+            <h1>Investissez dans votre conformité,<br>évitez les amendes de millions</h1>
+            <p style="font-size: 20px; color: var(--gray); max-width: 700px; margin: 20px auto 0;">
+                Des tarifs transparents qui protègent votre entreprise des risques réglementaires AI Act & RGPD
             </p>
         </section>
 
+        <div class="calculator">
+            <h3 style="margin-bottom: 20px;">📈 Calculez ce que vous économisez</h3>
+            <p style="color: var(--gray); margin-bottom: 30px;">Comparé à un consultant juridique spécialisé en IA :</p>
+            
+            <div class="comparison-grid">
+                <div class="comparison-item comparison-consultant">
+                    <h4 style="color: var(--danger); margin-bottom: 15px;"><i class="fas fa-user-tie"></i> Consultant</h4>
+                    <p><strong>300€/heure</strong></p>
+                    <p>× 40 heures/mois</p>
+                    <p style="font-size: 24px; color: var(--danger); font-weight: 700; margin-top: 15px;">= 12.000€/mois</p>
+                    <p style="font-size: 14px; color: var(--gray); margin-top: 10px;">Sans garantie continue</p>
+                </div>
+                
+                <div class="comparison-item comparison-ai">
+                    <h4 style="color: var(--success); margin-bottom: 15px;"><i class="fas fa-robot"></i> Clarity AI</h4>
+                    <p><strong>À partir de 199€/mois</strong></p>
+                    <p>Surveillance continue 24/7</p>
+                    <p style="font-size: 24px; color: var(--success); font-weight: 700; margin-top: 15px;">= Économie de 11.801€/mois</p>
+                    <p style="font-size: 14px; color: var(--gray); margin-top: 10px;">Avec certification incluse</p>
+                </div>
+            </div>
+            
+            <p style="margin-top: 20px; font-size: 18px;">
+                <strong>Soit plus de <span style="color: var(--success);">141.600€ d'économies par an</span> !</strong>
+            </p>
+        </div>
+
         <div class="pricing-grid">
+            <!-- PLAN STARTER -->
             <div class="pricing-card">
-                <h3 class="plan-name">Découverte</h3>
-                <div class="plan-price">Gratuit</div>
-                <p class="plan-period">Pour tester la plateforme</p>
+                <h3 class="plan-name">Starter</h3>
+                <div class="plan-price">199€<span style="font-size: 24px;">/mois</span></div>
+                <p class="plan-period">Facturé annuellement : 1.999€/an</p>
+                <div class="savings-badge">Économisez 389€</div>
                 <ul class="plan-features">
-                    <li><i class="fas fa-check"></i> 1 analyse par mois</li>
-                    <li><i class="fas fa-check"></i> Rapport basique</li>
-                    <li><i class="fas fa-check"></i> Support par email</li>
-                    <li><i class="fas fa-times" style="color: var(--danger);"></i> Export PDF</li>
-                    <li><i class="fas fa-times" style="color: var(--danger);"></i> Historique illimité</li>
-                    <li><i class="fas fa-times" style="color: var(--danger);"></i> Support prioritaire</li>
+                    <li><i class="fas fa-check"></i> 10 analyses par mois</li>
+                    <li><i class="fas fa-check"></i> Rapports basiques</li>
+                    <li><i class="fas fa-check"></i> Support email</li>
+                    <li><i class="fas fa-check"></i> Checklist AI Act</li>
+                    <li><i class="fas fa-times"></i> Audit RGPD</li>
+                    <li><i class="fas fa-times"></i> Support prioritaire</li>
+                    <li><i class="fas fa-times"></i> Certification</li>
                 </ul>
-                <button class="btn-pricing secondary" onclick="signup('free')">
-                    Commencer gratuitement
+                <button class="btn-pricing secondary" onclick="signup('starter')" aria-label="Choisir l'offre Starter à 199€ par mois">
+                    <i class="fas fa-play-circle"></i> Essai gratuit 14 jours
                 </button>
             </div>
             
+            <!-- PLAN PROFESSIONNEL -->
             <div class="pricing-card popular">
                 <div class="popular-badge">Le plus populaire</div>
-                <h3 class="plan-name">Startup</h3>
-                <div class="plan-price">99€<span class="plan-period">/mois</span></div>
-                <p class="plan-period">Facturé annuellement : 999€/an (économisez 189€)</p>
+                <h3 class="plan-name">Professionnel</h3>
+                <div class="plan-price">699€<span style="font-size: 24px;">/mois</span></div>
+                <p class="plan-period">Facturé annuellement : 6.999€/an</p>
+                <div class="savings-badge" style="background: var(--primary);">Économisez 1.389€</div>
                 <ul class="plan-features">
                     <li><i class="fas fa-check"></i> 50 analyses par mois</li>
-                    <li><i class="fas fa-check"></i> Rapports détaillés</li>
-                    <li><i class="fas fa-check"></i> Export PDF & Word</li>
-                    <li><i class="fas fa-check"></i> Historique 12 mois</li>
-                    <li><i class="fas fa-check"></i> Support chat</li>
-                    <li><i class="fas fa-times" style="color: var(--danger);"></i> Audit personnalisé</li>
+                    <li><i class="fas fa-check"></i> Rapports détaillés + export PDF/Word</li>
+                    <li><i class="fas fa-check"></i> Audit RGPD annuel inclus</li>
+                    <li><i class="fas fa-check"></i> Historique 24 mois</li>
+                    <li><i class="fas fa-check"></i> Support chat + téléphone</li>
+                    <li><i class="fas fa-check"></i> Certification AI Act de base</li>
+                    <li><i class="fas fa-check"></i> Alertes conformité en temps réel</li>
                 </ul>
-                <button class="btn-pricing" onclick="signup('startup')">
-                    Choisir cette offre
+                <button class="btn-pricing" onclick="signup('pro')" aria-label="Choisir l'offre Professionnel à 699€ par mois">
+                    <i class="fas fa-rocket"></i> Choisir cette offre
                 </button>
             </div>
             
+            <!-- PLAN ENTERPRISE -->
             <div class="pricing-card">
                 <h3 class="plan-name">Enterprise</h3>
-                <div class="plan-price">499€<span class="plan-period">/mois</span></div>
-                <p class="plan-period">Facturé annuellement : 4 999€/an (économisez 989€)</p>
+                <div class="plan-price">2.499€<span style="font-size: 24px;">/mois</span></div>
+                <p class="plan-period">Facturé annuellement : 24.999€/an</p>
+                <div class="savings-badge">Économisez 4.989€</div>
                 <ul class="plan-features">
                     <li><i class="fas fa-check"></i> Analyses illimitées</li>
-                    <li><i class="fas fa-check"></i> Rapports personnalisés</li>
-                    <li><i class="fas fa-check"></i> API complète</li>
+                    <li><i class="fas fa-check"></i> Rapports personnalisés & API complète</li>
+                    <li><i class="fas fa-check"></i> Audit sur site possible</li>
                     <li><i class="fas fa-check"></i> Historique illimité</li>
-                    <li><i class="fas fa-check"></i> Support 24/7</li>
-                    <li><i class="fas fa-check"></i> Audit personnalisé inclus</li>
+                    <li><i class="fas fa-check"></i> Support 24/7 dédié</li>
+                    <li><i class="fas fa-check"></i> Certification complète AI Act + RGPD</li>
+                    <li><i class="fas fa-check"></i> Formation équipe incluse</li>
                 </ul>
-                <button class="btn-pricing secondary" onclick="signup('enterprise')">
-                    Contactez-nous
+                <button class="btn-pricing secondary" onclick="signup('enterprise')" aria-label="Contacter pour l'offre Enterprise à 2.499€ par mois">
+                    <i class="fas fa-headset"></i> Demander un devis
                 </button>
             </div>
         </div>
@@ -340,99 +562,217 @@
             <h2>Questions fréquentes</h2>
             
             <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(1)">
-                    Puis-je changer de formule à tout moment ?
+                <div class="faq-question" onclick="toggleFAQ(1)" tabindex="0" role="button" aria-expanded="false" aria-controls="faq-1">
+                    Pourquoi ces prix sont-ils justifiés ?
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer" id="faq-1">
-                    Oui, vous pouvez passer d'une formule à une autre à tout moment. La différence de prix sera proratisée.
+                    <p><strong>Notre calcul de valeur :</strong></p>
+                    <ul style="list-style: none; margin: 15px 0;">
+                        <li>✅ Évite l'amende AI Act : jusqu'à <strong>7% du CA mondial</strong></li>
+                        <li>✅ Évite l'amende RGPD : jusqu'à <strong>4% du CA mondial</strong></li>
+                        <li>✅ Remplace un consultant : <strong>150-300€/heure</strong></li>
+                        <li>✅ Audit manuel unique : <strong>5.000-50.000€</strong></li>
+                    </ul>
+                    <p><strong>Notre solution à 699€/mois = 2-3 heures de consultant, mais protège toute l'année.</strong></p>
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(2)">
-                    Y a-t-il un engagement ?
+                <div class="faq-question" onclick="toggleFAQ(2)" tabindex="0" role="button" aria-expanded="false" aria-controls="faq-2">
+                    Puis-je changer de formule à tout moment ?
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer" id="faq-2">
-                    Non, tous nos abonnements sont sans engagement. Vous pouvez annuler à tout moment.
+                    Oui, vous pouvez passer d'une formule à une autre à tout moment. La différence de prix sera proratisée et appliquée à votre prochaine facture.
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(3)">
-                    Les données sont-elles sécurisées ?
+                <div class="faq-question" onclick="toggleFAQ(3)" tabindex="0" role="button" aria-expanded="false" aria-controls="faq-3">
+                    Y a-t-il un engagement ?
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer" id="faq-3">
-                    Oui, toutes les données sont chiffrées et hébergées en France. Nous sommes certifiés RGPD.
+                    Non, tous nos abonnements sont sans engagement. Vous pouvez annuler à tout moment. L'abonnement annuel offre une réduction significative mais reste sans engagement.
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(4)">
-                    Puis-je tester avant de payer ?
+                <div class="faq-question" onclick="toggleFAQ(4)" tabindex="0" role="button" aria-expanded="false" aria-controls="faq-4">
+                    Les données sont-elles sécurisées ?
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer" id="faq-4">
-                    Bien sûr ! La formule Découverte est entièrement gratuite et ne nécessite pas de carte bancaire.
+                    Oui, toutes les données sont chiffrées de bout en bout et hébergées en France dans des datacenters certifiés. Nous sommes certifiés RGPD, ISO 27001 et en cours de certification HDS.
                 </div>
             </div>
             
             <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(5)">
-                    Proposez-vous des tarifs pour les associations ?
+                <div class="faq-question" onclick="toggleFAQ(5)" tabindex="0" role="button" aria-expanded="false" aria-controls="faq-5">
+                    Puis-je tester avant de payer ?
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer" id="faq-5">
-                    Oui, nous avons des tarifs préférentiels pour les associations, ONG et institutions publiques. Contactez-nous.
+                    Absolument ! Toutes nos formules offrent un essai gratuit de 14 jours sans carte bancaire. Vous pouvez tester toutes les fonctionnalités de la formule choisie.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(6)" tabindex="0" role="button" aria-expanded="false" aria-controls="faq-6">
+                    Proposez-vous des tarifs pour les associations ?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer" id="faq-6">
+                    Oui, nous avons des tarifs préférentiels pour les associations, ONG, institutions publiques et startups en phase seed. Contactez-nous pour un devis personnalisé.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(7)" tabindex="0" role="button" aria-expanded="false" aria-controls="faq-7">
+                    Que se passe-t-il si je dépasse mes analyses mensuelles ?
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer" id="faq-7">
+                    Pour le plan Starter, vous pourrez continuer à utiliser la plateforme avec des fonctionnalités limitées ou passer au plan supérieur. Pour le Professionnel, des forfaits supplémentaires sont disponibles.
                 </div>
             </div>
         </div>
 
-        <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 20px; color: white;">
-            <h2 style="font-size: 36px; margin-bottom: 20px;">Prêt à garantir votre conformité IA ?</h2>
+        <div class="cta-section">
+            <h2 style="font-size: 36px; margin-bottom: 20px;">Protégez-vous des amendes de millions</h2>
             <p style="font-size: 20px; margin-bottom: 30px; max-width: 600px; margin: 0 auto 30px; opacity: 0.9;">
-                Rejoignez les 500+ entreprises qui nous font déjà confiance
+                Pour moins de 3 heures de consultant, obtenez une protection complète AI Act & RGPD
             </p>
-            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-                <button class="btn-pricing" style="background: white; color: var(--primary);" onclick="signup('startup')">
-                    <i class="fas fa-rocket"></i> Essayer 14 jours gratuitement
+            
+            <div class="clients-logos">
+                <div class="client-logo">🏢 BNP Paribas</div>
+                <div class="client-logo">⚡ Engie</div>
+                <div class="client-logo">📱 Deezer</div>
+                <div class="client-logo">🛍️ Veepee</div>
+                <div class="client-logo">🏥 AP-HP</div>
+            </div>
+            
+            <p style="font-size: 18px; margin-bottom: 40px; opacity: 0.9;">
+                Rejoignez les 500+ entreprises qui nous font confiance
+            </p>
+            
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;" class="cta-buttons">
+                <button class="btn-pricing" style="background: white; color: var(--primary); max-width: 300px;" onclick="signup('pro')">
+                    <i class="fas fa-shield-alt"></i> Essai Pro 14 jours (699€/mois)
                 </button>
-                <button class="btn-pricing secondary" style="border-color: white; color: white;" onclick="window.location.href='contact.html'">
-                    <i class="fas fa-calendar"></i> Réserver une démo
+                <button class="btn-pricing secondary" style="border-color: white; color: white; max-width: 300px;" onclick="window.location.href='contact.html'">
+                    <i class="fas fa-calculator"></i> Calculer mes économies
                 </button>
             </div>
         </div>
 
         <footer>
-            <p>© 2026 Clarity AI. Tous droits réservés.</p>
-            <p>Cet outil fournit une analyse préliminaire. Consultez un expert juridique pour une conformité complète.</p>
+            <div style="margin-bottom: 30px;">
+                <a href="index.html" class="logo" style="font-size: 28px; justify-content: center;">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Clarity AI</span>
+                </a>
+            </div>
+            
+            <div class="footer-links">
+                <a href="legal.html">Mentions légales</a>
+                <a href="privacy.html">Politique de confidentialité</a>
+                <a href="cgu.html">CGU</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            
+            <p style="margin-top: 30px;">© 2026 Clarity AI. Tous droits réservés.</p>
+            <p style="font-size: 14px; max-width: 800px; margin: 20px auto;">
+                <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> 
+                Cet outil fournit une analyse préliminaire automatisée. Pour une conformité juridique complète et formelle, consultez un expert juridique certifié. Nos certifications AI Act et RGPD sont délivrées par des organismes accrédités.
+            </p>
         </footer>
     </div>
 
     <script>
         function signup(plan) {
-            if (plan === 'free') {
-                alert('Redirection vers la page d\'inscription gratuite...');
-                // window.location.href = 'signup.html?plan=free';
-            } else if (plan === 'startup') {
-                alert('Redirection vers la page d\'inscription Startup (99€/mois)...');
-                // window.location.href = 'signup.html?plan=startup';
+            if (plan === 'starter') {
+                alert('Redirection vers la page d\'inscription Starter (199€/mois) avec essai 14 jours gratuit...');
+                // window.location.href = 'signup.html?plan=starter&trial=true';
+            } else if (plan === 'pro') {
+                alert('Redirection vers la page d\'inscription Professionnel (699€/mois) avec essai 14 jours gratuit...');
+                // window.location.href = 'signup.html?plan=pro&trial=true';
             } else {
-                window.location.href = 'contact.html';
+                window.location.href = 'contact.html?plan=enterprise';
             }
         }
         
         function toggleFAQ(id) {
             const answer = document.getElementById(`faq-${id}`);
+            const question = event.currentTarget;
+            const icon = question.querySelector('i');
+            const isExpanded = answer.classList.contains('show');
+            
+            // Toggle l'affichage de la réponse
             answer.classList.toggle('show');
+            
+            // Rotation de l'icône
+            icon.style.transform = answer.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+            
+            // Mise à jour de l'attribut aria-expanded
+            question.setAttribute('aria-expanded', answer.classList.contains('show'));
+            
+            // Fermer les autres FAQs (optionnel - commenté par défaut)
+            /*
+            if (answer.classList.contains('show')) {
+                const allAnswers = document.querySelectorAll('.faq-answer');
+                const allIcons = document.querySelectorAll('.faq-question i');
+                
+                allAnswers.forEach((ans, index) => {
+                    if (ans.id !== `faq-${id}`) {
+                        ans.classList.remove('show');
+                        if (allIcons[index]) {
+                            allIcons[index].style.transform = 'rotate(0deg)';
+                        }
+                    }
+                });
+            }
+            */
         }
         
         // Ouvrir la première FAQ par défaut
         document.addEventListener('DOMContentLoaded', function() {
+            // Ouvrir la FAQ n°1 (justification des prix)
             toggleFAQ(1);
+            
+            // Ajouter la navigation au clavier pour les FAQs
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            faqQuestions.forEach((question, index) => {
+                question.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleFAQ(index + 1);
+                    }
+                });
+            });
         });
+        
+        // Fonction pour calculer les économies (exemple)
+        function calculateSavings() {
+            const consultantHourly = 300;
+            const consultantHours = 40;
+            const monthlyConsultant = consultantHourly * consultantHours;
+            
+            const clarityPlans = {
+                starter: 199,
+                pro: 699,
+                enterprise: 2499
+            };
+            
+            Object.keys(clarityPlans).forEach(plan => {
+                const savings = monthlyConsultant - clarityPlans[plan];
+                console.log(`Économie avec ${plan}: ${savings}€/mois`);
+            });
+        }
+        
+        // Appeler la fonction au chargement
+        document.addEventListener('DOMContentLoaded', calculateSavings);
     </script>
 </body>
 </html>
