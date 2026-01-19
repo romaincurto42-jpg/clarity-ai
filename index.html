@@ -6,13 +6,6 @@
     <title>Clarity AI | Conformité AI Act & RGPD</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
- if (data.success) {
-  // Afficher le résultat
-  const analysisHTML = marked.parse(data.analysis);
-  const knowledgeHTML = showRelevantRegulations(data.analysis + " " + text);
-  resultContent.innerHTML = analysisHTML + (knowledgeHTML || "");
-  
-  // Sauvegarder l'analyse...
     <style>
         :root {
             --primary: #2563eb;
@@ -267,7 +260,7 @@
             border-top: 1px solid #e2e8f0;
         }
 
-                @media (max-width: 768px) {
+        @media (max-width: 768px) {
             .hero h1 {
                 font-size: 32px;
                 line-height: 1.2;
@@ -326,8 +319,8 @@
                 padding: 5px 10px;
             }
         }
-                /* ========== OPTIMISATIONS MOBILE ========== */
         
+        /* ========== OPTIMISATIONS MOBILE ========== */
         @media (max-width: 768px) {
             .analyzer {
                 padding: 25px 20px;
@@ -426,7 +419,8 @@
                 font-size: 32px;
             }
         }
-                /* Footer mobile */
+        
+        /* Footer mobile */
         @media (max-width: 768px) {
             footer {
                 padding: 30px 0;
@@ -439,7 +433,8 @@
                 line-height: 1.5;
             }
         }
-                /* Typographie mobile */
+        
+        /* Typographie mobile */
         @media (max-width: 768px) {
             body {
                 font-size: 15px;
@@ -459,7 +454,8 @@
                 font-size: 15px;
             }
         }
-                /* Zones tactiles pour mobile */
+        
+        /* Zones tactiles pour mobile */
         @media (max-width: 768px) {
             button, 
             .btn,
@@ -490,7 +486,7 @@
                 <i class="fas fa-shield-alt"></i>
                 <span>Clarity AI</span>
             </a>
-                       <nav>
+            <nav>
                 <a href="index.html" class="active">Accueil</a>
                 <a href="features.html">Fonctionnalités</a>
                 <a href="pricing.html">Tarifs</a>
@@ -500,65 +496,67 @@
                 </a>
             </nav>
             <button onclick="showAuthModal()" class="btn" id="auth-btn">
-    <i class="fas fa-user"></i> Se connecter
-</button>
+                <i class="fas fa-user"></i> Se connecter
+            </button>
         </header>
-<!-- Fenêtre d'inscription améliorée -->
-<div id="auth-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
-    <div style="background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center;">
-        <button onclick="hideAuthModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
-        
-        <h3 style="color: #2563eb; margin-bottom: 20px;">🔐 Créer votre compte</h3>
-        
-        <input type="text" id="user-name" placeholder="Votre nom" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
-        
-        <input type="email" id="user-email" placeholder="Email professionnel" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
-        
-        <input type="password" id="user-password" placeholder="Mot de passe (6 caractères min)" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
-        
-        <select id="user-company-size" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
-            <option value="">Taille de votre entreprise</option>
-            <option value="startup">Startup (1-10)</option>
-            <option value="pmc">PME (11-50)</option>
-            <option value="etr">ETI (51-250)</option>
-            <option value="grande">Grande entreprise (+250)</option>
-        </select>
-        
-        <div style="text-align: left; margin: 15px 0; font-size: 14px;">
-            <input type="checkbox" id="terms" style="margin-right: 8px;">
-            <label for="terms">J'accepte les <a href="#" style="color: #2563eb;">conditions d'utilisation</a></label>
-        </div>
-        
-        <button onclick="createAccount()" style="width: 100%; background: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; margin: 10px 0; cursor: pointer; font-size: 16px;">
-            Créer mon compte gratuit
-        </button>
-        
-        <p style="margin-top: 15px; color: #666; font-size: 14px;">
-            Déjà un compte ? <a href="#" onclick="showLogin()" style="color: #2563eb;">Se connecter</a>
-        </p>
-    </div>
-</div>
 
-<!-- Fenêtre de connexion -->
-<div id="login-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
-    <div style="background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center;">
-        <button onclick="hideLoginModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
-        
-        <h3 style="color: #2563eb; margin-bottom: 20px;">🔐 Connexion</h3>
-        
-        <input type="email" id="login-email" placeholder="Votre email" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
-        
-        <input type="password" id="login-password" placeholder="Votre mot de passe" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
-        
-        <button onclick="loginUser()" style="width: 100%; background: #2563eb; color: white; border: none; padding: 12px; border-radius: 8px; margin: 10px 0; cursor: pointer; font-size: 16px;">
-            Se connecter
-        </button>
-        
-        <p style="margin-top: 15px; color: #666; font-size: 14px;">
-            Pas encore de compte ? <a href="#" onclick="showSignup()" style="color: #2563eb;">S'inscrire</a>
-        </p>
-    </div>
-</div>
+        <!-- Fenêtre d'inscription améliorée -->
+        <div id="auth-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center;">
+                <button onclick="hideAuthModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
+                
+                <h3 style="color: #2563eb; margin-bottom: 20px;">🔐 Créer votre compte</h3>
+                
+                <input type="text" id="user-name" placeholder="Votre nom" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+                
+                <input type="email" id="user-email" placeholder="Email professionnel" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+                
+                <input type="password" id="user-password" placeholder="Mot de passe (6 caractères min)" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+                
+                <select id="user-company-size" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+                    <option value="">Taille de votre entreprise</option>
+                    <option value="startup">Startup (1-10)</option>
+                    <option value="pmc">PME (11-50)</option>
+                    <option value="etr">ETI (51-250)</option>
+                    <option value="grande">Grande entreprise (+250)</option>
+                </select>
+                
+                <div style="text-align: left; margin: 15px 0; font-size: 14px;">
+                    <input type="checkbox" id="terms" style="margin-right: 8px;">
+                    <label for="terms">J'accepte les <a href="#" style="color: #2563eb;">conditions d'utilisation</a></label>
+                </div>
+                
+                <button onclick="createAccount()" style="width: 100%; background: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; margin: 10px 0; cursor: pointer; font-size: 16px;">
+                    Créer mon compte gratuit
+                </button>
+                
+                <p style="margin-top: 15px; color: #666; font-size: 14px;">
+                    Déjà un compte ? <a href="#" onclick="showLogin()" style="color: #2563eb;">Se connecter</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Fenêtre de connexion -->
+        <div id="login-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center;">
+                <button onclick="hideLoginModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
+                
+                <h3 style="color: #2563eb; margin-bottom: 20px;">🔐 Connexion</h3>
+                
+                <input type="email" id="login-email" placeholder="Votre email" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+                
+                <input type="password" id="login-password" placeholder="Votre mot de passe" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+                
+                <button onclick="loginUser()" style="width: 100%; background: #2563eb; color: white; border: none; padding: 12px; border-radius: 8px; margin: 10px 0; cursor: pointer; font-size: 16px;">
+                    Se connecter
+                </button>
+                
+                <p style="margin-top: 15px; color: #666; font-size: 14px;">
+                    Pas encore de compte ? <a href="#" onclick="showSignup()" style="color: #2563eb;">S'inscrire</a>
+                </p>
+            </div>
+        </div>
+
         <section class="hero">
             <h1>Conformité AI Act & RGPD Automatisée</h1>
             <p style="font-size: 20px; color: var(--gray); max-width: 700px; margin: 0 auto 30px;">
@@ -610,7 +608,7 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
                         <button onclick="saveReport()">
                             <i class="fas fa-save"></i> Sauvegarder
                         </button>
-                                                <button onclick="exportCSV()">
+                        <button onclick="exportCSV()">
                             <i class="fas fa-file-csv"></i> CSV
                         </button>
                     </div>
@@ -659,7 +657,8 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
     <script>
         // ==================== CONFIGURATION ====================
         const API_BASE_URL = 'https://clarity-ai-4zhg.onrender.com';
-                // ==================== FONCTIONS D'AUTHENTIFICATION ====================
+        
+        // ==================== FONCTIONS D'AUTHENTIFICATION ====================
         function showAuthModal() {
             document.getElementById('auth-modal').style.display = 'flex';
         }
@@ -719,7 +718,7 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
             // Sauvegarder dans localStorage
             localStorage.setItem('clarity_user', JSON.stringify(user));
             
-                       hideAuthModal();
+            hideAuthModal();
             updateUserUI(user);
             
             // Animation de bienvenue
@@ -846,6 +845,7 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
             
             console.log('📊 Analyse sauvegardée pour', user.name);
         }
+        
         // ==================== FONCTION PRINCIPALE ====================
         async function analyze() {
             const company = document.getElementById('company').value;
@@ -884,13 +884,16 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
                 
                 if (data.success) {
                     // Afficher le résultat
-                    resultContent.innerHTML = marked.parse(data.analysis);
-                                        // Sauvegarder l'analyse si l'utilisateur est connecté
+                    const analysisHTML = marked.parse(data.analysis);
+                    resultContent.innerHTML = analysisHTML;
+                    
+                    // Sauvegarder l'analyse si l'utilisateur est connecté
                     saveAnalysis({
                         company: company,
                         content: text,
                         summary: data.analysis.substring(0, 200) + '...'
                     });
+                    
                     resultDiv.style.display = 'block';
                     
                     // Animation
@@ -932,79 +935,59 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
                 analyzeBtn.innerHTML = '<i class="fas fa-microscope"></i> Analyser la Conformité';
             }
         }
-// ==================== INSCRIPTION SIMPLE ====================
-function showAuthModal() {
-    document.getElementById('auth-modal').style.display = 'flex';
-}
 
-function hideAuthModal() {
-    document.getElementById('auth-modal').style.display = 'none';
-}
+        // ==================== INSCRIPTION SIMPLE ====================
+        function handleSignUp() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Le mot de passe doit faire au moins 6 caractères');
+                return;
+            }
+            
+            // Simuler une inscription (sans base de données pour l'instant)
+            alert('✅ Compte créé ! (Mode démo)');
+            hideAuthModal();
+            
+            // Changer le bouton pour montrer que l'utilisateur est connecté
+            const authBtn = document.getElementById('auth-btn');
+            authBtn.innerHTML = '<i class="fas fa-user-check"></i> ' + email;
+            authBtn.style.background = '#10b981';
+            
+            // Sauvegarder l'email dans le navigateur
+            localStorage.setItem('clarity_user', email);
+        }
 
-function handleSignUp() {
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    
-    if (!email || !password) {
-        alert('Veuillez remplir tous les champs');
-        return;
-    }
-    
-    if (password.length < 6) {
-        alert('Le mot de passe doit faire au moins 6 caractères');
-        return;
-    }
-    
-    // Simuler une inscription (sans base de données pour l'instant)
-    alert('✅ Compte créé ! (Mode démo)');
-    hideAuthModal();
-    
-    // Changer le bouton pour montrer que l'utilisateur est connecté
-    const authBtn = document.getElementById('auth-btn');
-    authBtn.innerHTML = '<i class="fas fa-user-check"></i> ' + email;
-    authBtn.style.background = '#10b981';
-    
-    // Sauvegarder l'email dans le navigateur
-    localStorage.setItem('clarity_user', email);
-}
-
-function handleLogin() {
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    
-    if (!email || !password) {
-        alert('Veuillez remplir tous les champs');
-        return;
-    }
-    
-    // Simuler une connexion
-    alert('✅ Connecté ! (Mode démo)');
-    hideAuthModal();
-    
-    // Changer le bouton
-    const authBtn = document.getElementById('auth-btn');
-    authBtn.innerHTML = '<i class="fas fa-user-check"></i> ' + email;
-    authBtn.style.background = '#2563eb';
-    
-    // Sauvegarder l'email
-    localStorage.setItem('clarity_user', email);
-}
+        function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (!email || !password) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+            
+            // Simuler une connexion
+            alert('✅ Connecté ! (Mode démo)');
+            hideAuthModal();
+            
+            // Changer le bouton
+            const authBtn = document.getElementById('auth-btn');
+            authBtn.innerHTML = '<i class="fas fa-user-check"></i> ' + email;
+            authBtn.style.background = '#2563eb';
+            
+            // Sauvegarder l'email
+            localStorage.setItem('clarity_user', email);
+        }
+        
         // ==================== FONCTIONS UTILITAIRES ====================
         function copyReport() {
-            const text = document.getElementById('result-content').textContent;
-            navigator.clipboard.writeText(text)
-                .then(() => alert('✅ Rapport copié dans le presse-papier !'))
-                .catch(() => alert('❌ Erreur lors de la copie'));
-        }
-        
-        function exportPDF() {
-            alert('📄 Fonction PDF - Version pro uniquement');
-        }
-        
-        function saveReport() {
-            alert('💾 Fonction sauvegarde - Version pro uniquement');
-        }
-                function copyReport() {
             const text = document.getElementById('result-content').textContent;
             navigator.clipboard.writeText(text)
                 .then(() => alert('✅ Rapport copié dans le presse-papier !'))
@@ -1048,6 +1031,7 @@ function handleLogin() {
             
             alert('📊 Fichier CSV téléchargé !');
         }
+        
         // ==================== EXEMPLES PRÉDÉFINIS ====================
         function loadExample(type) {
             const examples = {
@@ -1076,7 +1060,7 @@ function handleLogin() {
             }
         }
 
-                // ==================== INITIALISATION ====================
+        // ==================== INITIALISATION ====================
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Clarity AI - Frontend initialisé');
             console.log('🌐 API: https://clarity-ai-4zhg.onrender.com');
