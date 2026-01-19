@@ -6,6 +6,13 @@
     <title>Clarity AI | Conformité AI Act & RGPD</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+   if (data.success) {
+  // Afficher le résultat
+  const analysisHTML = marked.parse(data.analysis);
+  const knowledgeHTML = showRelevantRegulations(text);
+  resultContent.innerHTML = analysisHTML + knowledgeHTML;
+  
+  // Sauvegarder l'analyse...
     <style>
         :root {
             --primary: #2563eb;
