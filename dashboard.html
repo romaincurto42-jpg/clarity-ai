@@ -213,7 +213,63 @@
                     </p>
                 </div>
             </div>
-            
+            <!-- STATISTIQUES SIMPLES -->
+<div style="
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  border: 2px solid #e2e8f0;
+">
+  <h3 style="margin-bottom: 20px; color: #1e293b;">
+    <i class="fas fa-chart-bar"></i> Vue d'ensemble
+  </h3>
+  
+  <div id="stats-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+    <!-- Les stats seront ajoutées par JavaScript -->
+  </div>
+</div>
+
+<script>
+// Fonction pour charger les statistiques
+function loadStats() {
+  const analysesStr = localStorage.getItem('clarity_analyses');
+  const analyses = analysesStr ? JSON.parse(analysesStr) : [];
+  
+  // Compter les analyses des 7 derniers jours
+  const recentCount = analyses.filter(a => {
+    const date = new Date(a.date);
+    const now = new Date();
+    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+    return diffDays <= 7;
+  }).length;
+  
+  // Compter les entreprises uniques
+  const companies = [...new Set(analyses.map(a => a.company))].length;
+  
+  const statsHTML = `
+    <div style="text-align: center; padding: 20px; background: #f0f9ff; border-radius: 10px;">
+      <div style="font-size: 32px; font-weight: bold; color: #2563eb;">${analyses.length}</div>
+      <div style="color: #64748b;">Analyses totales</div>
+    </div>
+    
+    <div style="text-align: center; padding: 20px; background: #f0f9ff; border-radius: 10px;">
+      <div style="font-size: 32px; font-weight: bold; color: #10b981;">${companies}</div>
+      <div style="color: #64748b;">Entreprises</div>
+    </div>
+    
+    <div style="text-align: center; padding: 20px; background: #f0f9ff; border-radius: 10px;">
+      <div style="font-size: 32px; font-weight: bold; color: #8b5cf6;">${recentCount}</div>
+      <div style="color: #64748b;">7 derniers jours</div>
+    </div>
+  `;
+  
+  document.getElementById('stats-container').innerHTML = statsHTML;
+}
+
+// Charger les stats quand la page est prête
+document.addEventListener('DOMContentLoaded', loadStats);
+</script>
             <h2 style="margin-bottom: 20px; color: #1e293b;">
                 <i class="fas fa-history"></i> Historique des analyses
             </h2>
