@@ -6,7 +6,6 @@
     <title>Clarity AI | Conformité AI Act & RGPD</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary: #2563eb;
@@ -261,23 +260,218 @@
             border-top: 1px solid #e2e8f0;
         }
 
-        @media (max-width: 768px) {
+                @media (max-width: 768px) {
             .hero h1 {
-                font-size: 36px;
+                font-size: 32px;
+                line-height: 1.2;
             }
             
             header {
                 flex-direction: column;
-                gap: 20px;
+                gap: 15px;
+                padding: 15px 0;
+                margin-bottom: 20px;
+            }
+            
+            .logo {
+                font-size: 20px;
             }
             
             nav {
                 display: flex;
-                gap: 20px;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+                width: 100%;
             }
             
             nav a {
                 margin: 0;
+                font-size: 14px;
+                padding: 6px 12px;
+                background: #f1f5f9;
+                border-radius: 6px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 28px;
+            }
+            
+            .hero {
+                padding: 30px 15px;
+            }
+            
+            nav {
+                gap: 8px;
+            }
+            
+            nav a {
+                font-size: 13px;
+                padding: 5px 10px;
+            }
+        }
+                /* ========== OPTIMISATIONS MOBILE ========== */
+        
+        @media (max-width: 768px) {
+            .analyzer {
+                padding: 25px 20px;
+                border-radius: 15px;
+                margin-bottom: 25px;
+            }
+            
+            .section-title {
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+            
+            .form-control {
+                padding: 14px;
+                font-size: 16px;
+            }
+            
+            textarea.form-control {
+                min-height: 120px;
+                font-size: 16px;
+            }
+            
+            .btn-analyze {
+                padding: 16px;
+                font-size: 16px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                margin-top: 30px;
+            }
+            
+            .feature {
+                padding: 20px;
+            }
+            
+            .result {
+                padding: 20px;
+            }
+            
+            .result-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .result-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .result-actions button {
+                flex: 1;
+                justify-content: center;
+                font-size: 14px;
+                padding: 8px 10px;
+            }
+            
+            .result-content {
+                padding: 20px 15px;
+                font-size: 15px;
+                max-height: 400px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .analyzer {
+                padding: 20px 15px;
+            }
+            
+            .section-title {
+                font-size: 20px;
+            }
+            
+            .btn-analyze {
+                padding: 14px;
+                font-size: 15px;
+            }
+            
+            .result-actions {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .result-actions button {
+                min-width: calc(50% - 4px);
+                font-size: 13px;
+            }
+            
+            .feature i {
+                font-size: 32px;
+            }
+        }
+                /* Footer mobile */
+        @media (max-width: 768px) {
+            footer {
+                padding: 30px 0;
+                margin-top: 40px;
+                font-size: 14px;
+            }
+            
+            footer p {
+                margin-bottom: 10px;
+                line-height: 1.5;
+            }
+        }
+                /* Typographie mobile */
+        @media (max-width: 768px) {
+            body {
+                font-size: 15px;
+                line-height: 1.5;
+            }
+            
+            h1, h2, h3, h4 {
+                line-height: 1.3;
+            }
+            
+            .hero p {
+                font-size: 16px;
+                line-height: 1.6;
+            }
+            
+            .form-group label {
+                font-size: 15px;
+            }
+        }
+                /* Zones tactiles pour mobile */
+        @media (max-width: 768px) {
+            button, 
+            .btn,
+            nav a,
+            .feature,
+            input,
+            textarea,
+            select {
+                min-height: 44px;
+            }
+            
+            .result-actions button,
+            .analysis-card button {
+                min-height: 36px;
+            }
+            
+            /* Éviter le zoom iOS */
+            input, textarea, select {
+                font-size: 16px !important;
             }
         }
     </style>
@@ -289,48 +483,75 @@
                 <i class="fas fa-shield-alt"></i>
                 <span>Clarity AI</span>
             </a>
-            <nav>
+                       <nav>
                 <a href="index.html" class="active">Accueil</a>
                 <a href="features.html">Fonctionnalités</a>
                 <a href="pricing.html">Tarifs</a>
                 <a href="contact.html">Contact</a>
+                <a href="dashboard.html" id="dashboard-link" style="display: none;">
+                    <i class="fas fa-chart-line"></i> Mon Dashboard
+                </a>
             </nav>
             <button onclick="showAuthModal()" class="btn" id="auth-btn">
-                <i class="fas fa-user"></i> Se connecter
-            </button>
+    <i class="fas fa-user"></i> Se connecter
+</button>
         </header>
-
-        <!-- Modal d'authentification simple -->
-        <div id="auth-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
-            <div style="background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; position: relative;">
-                <button onclick="hideAuthModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
-                
-                <h3 style="color: #2563eb; margin-bottom: 20px; text-align: center;">🔐 Connexion Clarity AI</h3>
-                
-                <input type="email" id="login-email" placeholder="Email" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px;">
-                <input type="password" id="login-password" placeholder="Mot de passe" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px;">
-                
-                <button onclick="handleLogin()" style="width: 100%; background: #2563eb; color: white; border: none; padding: 12px; border-radius: 8px; margin: 10px 0; cursor: pointer;">
-                    Se connecter
-                </button>
-                
-                <button onclick="handleSignUp()" style="width: 100%; background: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; margin: 10px 0; cursor: pointer;">
-                    Créer un compte
-                </button>
-                
-                <p style="text-align: center; margin: 20px 0; color: #94a3b8;">ou</p>
-                
-                <button onclick="loginWithGoogle()" style="width: 100%; background: white; color: #333; border: 2px solid #e2e8f0; padding: 12px; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer;">
-                    <img src="https://www.google.com/favicon.ico" width="20" height="20">
-                    Continuer avec Google
-                </button>
-                
-                <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 20px;">
-                    En continuant, vous acceptez nos conditions d'utilisation.
-                </p>
-            </div>
+<!-- Fenêtre d'inscription améliorée -->
+<div id="auth-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center;">
+        <button onclick="hideAuthModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
+        
+        <h3 style="color: #2563eb; margin-bottom: 20px;">🔐 Créer votre compte</h3>
+        
+        <input type="text" id="user-name" placeholder="Votre nom" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+        
+        <input type="email" id="user-email" placeholder="Email professionnel" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+        
+        <input type="password" id="user-password" placeholder="Mot de passe (6 caractères min)" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+        
+        <select id="user-company-size" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+            <option value="">Taille de votre entreprise</option>
+            <option value="startup">Startup (1-10)</option>
+            <option value="pmc">PME (11-50)</option>
+            <option value="etr">ETI (51-250)</option>
+            <option value="grande">Grande entreprise (+250)</option>
+        </select>
+        
+        <div style="text-align: left; margin: 15px 0; font-size: 14px;">
+            <input type="checkbox" id="terms" style="margin-right: 8px;">
+            <label for="terms">J'accepte les <a href="#" style="color: #2563eb;">conditions d'utilisation</a></label>
         </div>
+        
+        <button onclick="createAccount()" style="width: 100%; background: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; margin: 10px 0; cursor: pointer; font-size: 16px;">
+            Créer mon compte gratuit
+        </button>
+        
+        <p style="margin-top: 15px; color: #666; font-size: 14px;">
+            Déjà un compte ? <a href="#" onclick="showLogin()" style="color: #2563eb;">Se connecter</a>
+        </p>
+    </div>
+</div>
 
+<!-- Fenêtre de connexion -->
+<div id="login-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center;">
+        <button onclick="hideLoginModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">×</button>
+        
+        <h3 style="color: #2563eb; margin-bottom: 20px;">🔐 Connexion</h3>
+        
+        <input type="email" id="login-email" placeholder="Votre email" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+        
+        <input type="password" id="login-password" placeholder="Votre mot de passe" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px;">
+        
+        <button onclick="loginUser()" style="width: 100%; background: #2563eb; color: white; border: none; padding: 12px; border-radius: 8px; margin: 10px 0; cursor: pointer; font-size: 16px;">
+            Se connecter
+        </button>
+        
+        <p style="margin-top: 15px; color: #666; font-size: 14px;">
+            Pas encore de compte ? <a href="#" onclick="showSignup()" style="color: #2563eb;">S'inscrire</a>
+        </p>
+    </div>
+</div>
         <section class="hero">
             <h1>Conformité AI Act & RGPD Automatisée</h1>
             <p style="font-size: 20px; color: var(--gray); max-width: 700px; margin: 0 auto 30px;">
@@ -382,6 +603,9 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
                         <button onclick="saveReport()">
                             <i class="fas fa-save"></i> Sauvegarder
                         </button>
+                                                <button onclick="exportCSV()">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </button>
                     </div>
                 </div>
                 <div class="result-content" id="result-content"></div>
@@ -426,81 +650,196 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
     </div>
 
     <script>
-        // === CONFIGURATION SUPABASE ===
-        const SUPABASE_URL = 'https://qbylmtyqnofvrvatebvw.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFieWxtdHlxbm9mdnJ2YXRlYnZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3OTU1MTksImV4cCI6MjA4NDM3MTUxOX0.at60Dex6jpQ3XsTBfVtvmWmr9O1lmBtXVAjqbUSP5G8';
-        
-        // Initialisation Supabase
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        // === FONCTIONS AUTH ===
+        // ==================== CONFIGURATION ====================
+        const API_BASE_URL = 'https://clarity-ai-4zhg.onrender.com';
+                // ==================== FONCTIONS D'AUTHENTIFICATION ====================
         function showAuthModal() {
             document.getElementById('auth-modal').style.display = 'flex';
         }
-        
+
         function hideAuthModal() {
             document.getElementById('auth-modal').style.display = 'none';
         }
-        
-        async function handleLogin() {
+
+        function showLogin() {
+            hideAuthModal();
+            document.getElementById('login-modal').style.display = 'flex';
+        }
+
+        function hideLoginModal() {
+            document.getElementById('login-modal').style.display = 'none';
+        }
+
+        function showSignup() {
+            hideLoginModal();
+            document.getElementById('auth-modal').style.display = 'flex';
+        }
+
+        function createAccount() {
+            const name = document.getElementById('user-name').value;
+            const email = document.getElementById('user-email').value;
+            const password = document.getElementById('user-password').value;
+            const companySize = document.getElementById('user-company-size').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Validation
+            if (!name || !email || !password || !companySize) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+            
+            if (!terms) {
+                alert('Veuillez accepter les conditions d\'utilisation');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Le mot de passe doit faire au moins 6 caractères');
+                return;
+            }
+            
+            // Créer l'utilisateur
+            const user = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                companySize: companySize,
+                created: new Date().toISOString(),
+                plan: 'free',
+                analysisCount: 0
+            };
+            
+            // Sauvegarder dans localStorage
+            localStorage.setItem('clarity_user', JSON.stringify(user));
+            
+                       hideAuthModal();
+            updateUserUI(user);
+            
+            // Animation de bienvenue
+            const welcomeMsg = document.createElement('div');
+            welcomeMsg.innerHTML = `
+                <div style="position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 1001; animation: slideIn 0.5s ease;">
+                    <i class="fas fa-check-circle"></i> Bienvenue ${name} !
+                </div>
+            `;
+            document.body.appendChild(welcomeMsg);
+
+            // Supprimer après 3 secondes
+            setTimeout(() => {
+                welcomeMsg.remove();
+            }, 3000);
+            
+            // Ajouter aussi le style d'animation si pas déjà présent
+            if (!document.querySelector('#welcome-animation-style')) {
+                const style = document.createElement('style');
+                style.id = 'welcome-animation-style';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from {
+                            transform: translateX(100%);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            // Réinitialiser les champs
+            document.getElementById('user-name').value = '';
+            document.getElementById('user-email').value = '';
+            document.getElementById('user-password').value = '';
+            document.getElementById('user-company-size').value = '';
+            document.getElementById('terms').checked = false;
+        }
+
+        function loginUser() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             
-            const { data, error } = await supabase.auth.signInWithPassword({
+            // Validation
+            if (!email || !password) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+            
+            // Pour l'instant, simulation de connexion
+            const user = {
+                id: Date.now(),
+                name: email.split('@')[0],
                 email: email,
-                password: password
-            });
+                companySize: 'startup',
+                created: new Date().toISOString(),
+                plan: 'free',
+                analysisCount: 0
+            };
             
-            if (error) {
-                alert('Erreur: ' + error.message);
-            } else {
-                alert('✅ Connecté avec succès !');
-                hideAuthModal();
-                updateUIForUser(data.user);
-            }
+            localStorage.setItem('clarity_user', JSON.stringify(user));
+            alert(`✅ Bienvenue !`);
+            hideLoginModal();
+            updateUserUI(user);
         }
-        
-        async function handleSignUp() {
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            const { data, error } = await supabase.auth.signUp({
-                email: email,
-                password: password
-            });
-            
-            if (error) {
-                alert('Erreur: ' + error.message);
-            } else {
-                alert('✅ Compte créé ! Vérifiez votre email.');
-                hideAuthModal();
-            }
-        }
-        
-        async function loginWithGoogle() {
-            const { data, error } = await supabase.auth.signInWithOAuth({
-                provider: 'google'
-            });
-            
-            if (error) {
-                alert('Erreur: ' + error.message);
-            }
-        }
-        
-        function updateUIForUser(user) {
+
+        function updateUserUI(user) {
             const authBtn = document.getElementById('auth-btn');
             if (authBtn) {
-                authBtn.innerHTML = `<i class="fas fa-user-check"></i> ${user.email}`;
-                authBtn.onclick = () => {
-                    if (confirm('Déconnexion ?')) {
-                        supabase.auth.signOut();
+                authBtn.innerHTML = `<i class="fas fa-user-check"></i> ${user.name}`;
+                authBtn.style.background = '#10b981';
+                
+                // Afficher le lien dashboard
+                const dashboardLink = document.getElementById('dashboard-link');
+                if (dashboardLink) {
+                    dashboardLink.style.display = 'inline';
+                }
+                
+                // Changer l'action du bouton pour déconnexion
+                authBtn.onclick = function() {
+                    if (confirm(`Voulez-vous vous déconnecter, ${user.name} ?`)) {
+                        localStorage.removeItem('clarity_user');
+                        localStorage.removeItem('clarity_analyses');
                         location.reload();
                     }
                 };
             }
         }
-        
-        // === FONCTIONS D'ANALYSE EXISTANTES ===
+
+        // ==================== SAUVEGARDER LES ANALYSES ====================
+        function saveAnalysis(analysisData) {
+            // Récupérer l'utilisateur
+            const userStr = localStorage.getItem('clarity_user');
+            if (!userStr) return; // Pas d'utilisateur connecté
+            
+            const user = JSON.parse(userStr);
+            
+            // Récupérer les analyses existantes
+            let analyses = JSON.parse(localStorage.getItem('clarity_analyses') || '[]');
+            
+            // Ajouter la nouvelle analyse
+            analyses.unshift({
+                id: Date.now(),
+                userId: user.id,
+                company: analysisData.company,
+                date: new Date().toISOString(),
+                content: analysisData.content,
+                summary: analysisData.summary
+            });
+            
+            // Garder seulement les 20 dernières analyses
+            analyses = analyses.slice(0, 20);
+            
+            // Sauvegarder
+            localStorage.setItem('clarity_analyses', JSON.stringify(analyses));
+            
+            // Mettre à jour le compteur de l'utilisateur
+            user.analysisCount = analyses.length;
+            localStorage.setItem('clarity_user', JSON.stringify(user));
+            
+            console.log('📊 Analyse sauvegardée pour', user.name);
+        }
+        // ==================== FONCTION PRINCIPALE ====================
         async function analyze() {
             const company = document.getElementById('company').value;
             const text = document.getElementById('text').value;
@@ -509,18 +848,21 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
             const loadingDiv = document.getElementById('loading');
             const analyzeBtn = document.getElementById('analyze-btn');
             
+            // Validation
             if (!text.trim()) {
                 alert('Veuillez décrire votre système d\'IA');
                 return;
             }
             
+            // État initial
             resultDiv.style.display = 'none';
             loadingDiv.style.display = 'block';
             analyzeBtn.disabled = true;
             analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyse en cours...';
             
             try {
-                const response = await fetch('https://clarity-ai-4zhg.onrender.com/api/analyze', {
+                // Appel à l'API Render
+                const response = await fetch(`${API_BASE_URL}/api/analyze`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -534,9 +876,17 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
                 const data = await response.json();
                 
                 if (data.success) {
+                    // Afficher le résultat
                     resultContent.innerHTML = marked.parse(data.analysis);
+                                        // Sauvegarder l'analyse si l'utilisateur est connecté
+                    saveAnalysis({
+                        company: company,
+                        content: text,
+                        summary: data.analysis.substring(0, 200) + '...'
+                    });
                     resultDiv.style.display = 'block';
                     
+                    // Animation
                     resultDiv.style.opacity = '0';
                     resultDiv.style.transform = 'translateY(20px)';
                     setTimeout(() => {
@@ -550,6 +900,7 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
                 }
                 
             } catch (error) {
+                // Mode démo en cas d'erreur
                 resultContent.innerHTML = `
                     <h3>📋 Rapport de conformité AI Act (Mode démo)</h3>
                     <p><strong>Entreprise :</strong> ${company || 'Non spécifiée'}</p>
@@ -568,12 +919,70 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
                 `;
                 resultDiv.style.display = 'block';
             } finally {
+                // Réinitialiser l'interface
                 loadingDiv.style.display = 'none';
                 analyzeBtn.disabled = false;
                 analyzeBtn.innerHTML = '<i class="fas fa-microscope"></i> Analyser la Conformité';
             }
         }
-        
+// ==================== INSCRIPTION SIMPLE ====================
+function showAuthModal() {
+    document.getElementById('auth-modal').style.display = 'flex';
+}
+
+function hideAuthModal() {
+    document.getElementById('auth-modal').style.display = 'none';
+}
+
+function handleSignUp() {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    
+    if (!email || !password) {
+        alert('Veuillez remplir tous les champs');
+        return;
+    }
+    
+    if (password.length < 6) {
+        alert('Le mot de passe doit faire au moins 6 caractères');
+        return;
+    }
+    
+    // Simuler une inscription (sans base de données pour l'instant)
+    alert('✅ Compte créé ! (Mode démo)');
+    hideAuthModal();
+    
+    // Changer le bouton pour montrer que l'utilisateur est connecté
+    const authBtn = document.getElementById('auth-btn');
+    authBtn.innerHTML = '<i class="fas fa-user-check"></i> ' + email;
+    authBtn.style.background = '#10b981';
+    
+    // Sauvegarder l'email dans le navigateur
+    localStorage.setItem('clarity_user', email);
+}
+
+function handleLogin() {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+    
+    if (!email || !password) {
+        alert('Veuillez remplir tous les champs');
+        return;
+    }
+    
+    // Simuler une connexion
+    alert('✅ Connecté ! (Mode démo)');
+    hideAuthModal();
+    
+    // Changer le bouton
+    const authBtn = document.getElementById('auth-btn');
+    authBtn.innerHTML = '<i class="fas fa-user-check"></i> ' + email;
+    authBtn.style.background = '#2563eb';
+    
+    // Sauvegarder l'email
+    localStorage.setItem('clarity_user', email);
+}
+        // ==================== FONCTIONS UTILITAIRES ====================
         function copyReport() {
             const text = document.getElementById('result-content').textContent;
             navigator.clipboard.writeText(text)
@@ -588,7 +997,51 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
         function saveReport() {
             alert('💾 Fonction sauvegarde - Version pro uniquement');
         }
+                function copyReport() {
+            const text = document.getElementById('result-content').textContent;
+            navigator.clipboard.writeText(text)
+                .then(() => alert('✅ Rapport copié dans le presse-papier !'))
+                .catch(() => alert('❌ Erreur lors de la copie'));
+        }
         
+        function exportPDF() {
+            alert('📄 Fonction PDF - Version pro uniquement');
+        }
+        
+        function saveReport() {
+            alert('💾 Fonction sauvegarde - Version pro uniquement');
+        }
+        
+        function exportCSV() {
+            const analysesStr = localStorage.getItem('clarity_analyses');
+            if (!analysesStr || JSON.parse(analysesStr).length === 0) {
+                alert('Aucune analyse à exporter');
+                return;
+            }
+            
+            const analyses = JSON.parse(analysesStr);
+            let csv = 'Date,Entreprise,Résumé\n';
+            
+            analyses.forEach(analysis => {
+                const date = new Date(analysis.date).toLocaleDateString('fr-FR');
+                const summary = (analysis.summary || '').replace(/,/g, ';').replace(/\n/g, ' ');
+                csv += `${date},"${analysis.company}","${summary}"\n`;
+            });
+            
+            // Créer et télécharger le fichier
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'analyses-clarity-ai.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('📊 Fichier CSV téléchargé !');
+        }
+        // ==================== EXEMPLES PRÉDÉFINIS ====================
         function loadExample(type) {
             const examples = {
                 recrutement: {
@@ -615,29 +1068,23 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
                 analyze();
             }
         }
-        
-        // Au chargement
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log('🚀 Clarity AI - Supabase initialisé');
+
+                // ==================== INITIALISATION ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Clarity AI - Frontend initialisé');
+            console.log('🌐 API: https://clarity-ai-4zhg.onrender.com');
             
-            // Vérifie si l'utilisateur est déjà connecté
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                updateUIForUser(user);
-                console.log('👤 Utilisateur connecté:', user.email);
-            }
-            
-            // Test de connexion automatique
-            setTimeout(async () => {
+            // Vérifier si un utilisateur est déjà connecté
+            const savedUser = localStorage.getItem('clarity_user');
+            if (savedUser) {
                 try {
-                    const { data: { session } } = await supabase.auth.getSession();
-                    if (!session) {
-                        console.log('ℹ️ Aucun utilisateur connecté');
-                    }
-                } catch (error) {
-                    console.error('❌ Erreur Supabase:', error);
+                    const user = JSON.parse(savedUser);
+                    updateUserUI(user);
+                    console.log(`👤 Utilisateur connecté: ${user.name}`);
+                } catch (e) {
+                    console.log('Erreur de parsing utilisateur');
                 }
-            }, 1000);
+            }
         });
     </script>
 </body>
