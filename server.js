@@ -113,9 +113,11 @@ if (response.ok) {
   throw new Error(`Groq API error: ${response.status}`);
 }
       } catch (apiError) {
-        console.log('Groq API error:', apiError.message);
-        // Continue vers la simulation
-      }
+  console.log('🔴 Catch Groq error:', apiError.message);
+  console.log('🔴 Error name:', apiError.name);
+  console.log('🔴 Full error:', apiError);
+  // Continue vers la simulation
+}
     }
 
     // 2. SIMULATION (fallback)
@@ -208,3 +210,4 @@ try {
   console.error('❌ Failed to start server:', error);
   process.exit(1);
 }
+
