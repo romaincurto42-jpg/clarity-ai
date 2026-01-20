@@ -182,6 +182,61 @@ ${'='.repeat(50)}
     });
   }
 });
+// ==================== ROUTE DPIA GROQ ====================
+
+app.post('/api/generate-dpia', async (req, res) => {
+    try {
+        const { template, responses, score, prompt } = req.body;
+        
+        console.log('🤖 DPIA Groq demandée pour:', template);
+        
+        // Appel Groq
+        const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [
+                    {
+                        role: "system",
+                        content: "Tu es un expert français en conformité RGPD. Génère des Documents d'Impact sur la Protection des Données (DPIAs) professionnels en français. Utilise le format CNIL, cite les articles RGPD pertinents (Article 35 surtout), sois concret et actionnable."
+                    },
+                    {
+                        role: "user",
+                        content: prompt
+                    }
+                ],
+                temperature: 0.1,
+                max_tokens: 3000,
+            }),
+        });
+
+        if (!groqResponse.ok) {
+            throw new Error('Groq API error');
+        }
+
+        const data = await groqResponse.json();
+        const dpiaContent = data.choices[0].message.content;
+        
+        res.json({
+            success: true,
+            dpia: dpiaContent,
+            tokens: data.usage.total_tokens
+        });
+
+    } catch (error) {
+        console.error('❌ Erreur DPIA Groq:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Erreur de génération'
+        });
+    }
+});
+
+// ========================================================
 
 // Démarrer le serveur
 try {
