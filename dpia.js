@@ -405,25 +405,23 @@ function generateDPIAResult(templateId) {
                 </div>
             </div>
         `;
-          // ========== AFFICHER LE RÉSULTAT ==========
-        step3.innerHTML = dpiaHTML;
-        step3.style.display = 'block';
-        // ===========================================
-                   
-                      // Scroll vers le résultat
-        step3.scrollIntoView({ behavior: 'smooth' });
-        
-        // ========== SAUVEGARDE DANS L'HISTORIQUE ==========
-        const dpiaData = {
-            template: templateId,
-            score: scoreResult.score,
-            niveau: scoreResult.niveau,
-            color: scoreResult.couleur,
-            responses: responses
-        };
-        
-        saveDPIAHistory(dpiaData);
-        // =================================================
+        // ========== AFFICHER LE CHARGEMENT ==========
+step3.innerHTML = `
+    <div style="text-align: center; padding: 50px;">
+        <div style="border: 4px solid #e2e8f0; border-top: 4px solid #2563eb; border-radius: 50%; width: 40px; height: 40px; margin: 0 auto; animation: spin 1s linear infinite;"></div>
+        <style>
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        </style>
+        <h3 style="color: #2563eb; margin-top: 20px;">🤖 Génération de votre DPIA personnalisée avec IA...</h3>
+        <p style="color: #64748b;">Analyse en cours - Cela prendra quelques secondes</p>
+    </div>
+`;
+step3.style.display = 'block';
+step3.scrollIntoView({ behavior: 'smooth' });
+
+// ========== APPEL GROQ POUR DPIA COMPLÈTE ==========
+generateDPIAWithGroq(templateId, responses, scoreResult);
+// ====================================================
         
     } catch (error) {
         console.error('❌ Erreur génération DPIA:', error);
@@ -690,7 +688,7 @@ function viewDPIAHistory(id) {
                         <div style="color: #2563eb; font-weight: 500;">${dpia.responses.automation}%</div>
                     </div>
                     
-                    <div style="background: #f8fafc; padding: 15px; border-radius=8px;">
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px;">
                         <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">⏳ Conservation</div>
                         <div style="color: #2563eb; font-weight: 500;">${dpia.responses.conservation}</div>
                     </div>
@@ -760,6 +758,219 @@ function deleteDPIAHistory(id) {
     
     saveDPIAHistory(dpiaData);
 */
+// ==================== GROQ DPIA ====================
+
+async function generateDPIAWithGroq(templateId, responses, scoreResult) {
+    try {
+        console.log('🤖 Génération DPIA avec Groq...');
+        
+        // Construire le prompt
+        const prompt = `Génère un Document d'Impact sur la Protection des Données (DPIA) RGPD complet.
+        
+Type de système : ${templateId.toUpperCase()}
+Score de risque : ${scoreResult.score}/100 (${scoreResult.niveau})
+Volume : ${responses.volume} traitements/mois
+Données : ${responses.donnees}
+Automatisation : ${responses.automation}%
+Conservation : ${responses.conservation}
+Accès : ${responses.acces.join(', ')}
+
+Structure requise :
+1. Identification du traitement
+2. Description du traitement
+3. Nécessité et proportionnalité
+4. Évaluation des risques
+5. Mesures de protection
+6. Validation et suivi
+
+Sois professionnel, cite les articles RGPD, en français.`;
+
+        // Appeler ton API
+        const response = await fetch('https://clarity-ai-4zhg.onrender.com/api/generate-dpia', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                template: templateId,
+                responses: responses,
+                score: scoreResult,
+                prompt: prompt 
+            })
+        });
+
+        if (!response.ok) throw new Error('API error');
+        
+        const data = await response.json();
+        
+        if (data.success && data.dpia) {
+            displayGroqDPIA(templateId, responses, scoreResult, data.dpia, data.tokens);
+        } else {
+            displayBasicDPIA(templateId, responses, scoreResult);
+        }
+
+    } catch (error) {
+        console.error('❌ Erreur Groq DPIA:', error);
+        displayBasicDPIA(templateId, responses, scoreResult);
+    }
+}
+
+function displayGroqDPIA(templateId, responses, scoreResult, dpiaContent, tokensUsed) {
+    const step3 = document.getElementById('dpia-step3');
+    
+    const html = `
+        <div style="margin-bottom: 20px;">
+            <button onclick="showDPIAStep1()" style="background: none; border: none; color: #2563eb; cursor: pointer; font-size: 14px;">
+                ← Nouvelle DPIA
+            </button>
+        </div>
+        
+        <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+            <!-- En-tête -->
+            <div style="text-align: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 2px solid #e2e8f0;">
+                <div style="display: inline-block; background: ${scoreResult.couleur}; color: white; padding: 8px 20px; border-radius: 20px; margin-bottom: 15px; font-weight: 600;">
+                    SCORE : ${scoreResult.score}/100 - ${scoreResult.niveau}
+                </div>
+                <h1 style="color: #1e293b; margin-bottom: 10px; font-size: 28px;">
+                    📋 DPIA COMPLÈTE - ${templateId.charAt(0).toUpperCase() + templateId.slice(1)}
+                </h1>
+                <div style="color: #64748b; font-size: 14px;">
+                    <i class="fas fa-calendar"></i> ${new Date().toLocaleDateString('fr-FR')} | 
+                    <i class="fas fa-brain"></i> Généré par IA
+                </div>
+            </div>
+            
+            <!-- Contenu Groq -->
+            <div style="
+                background: #f8fafc; 
+                padding: 30px; 
+                border-radius: 12px;
+                white-space: pre-wrap;
+                font-family: 'Georgia', serif;
+                line-height: 1.8;
+                color: #1e293b;
+                border-left: 4px solid #2563eb;
+                max-height: 600px;
+                overflow-y: auto;
+                margin-bottom: 30px;
+            ">
+                ${dpiaContent}
+            </div>
+            
+            <!-- Résumé -->
+            <div style="background: #f0f9ff; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h3 style="color: #1e293b; margin-bottom: 15px;">📊 Votre profil</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="background: white; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">Volume</div>
+                        <div style="color: #2563eb;">${responses.volume}/mois</div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">Données</div>
+                        <div style="color: #2563eb;">${responses.donnees}</div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">Automatisation</div>
+                        <div style="color: #2563eb;">${responses.automation}%</div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">Conservation</div>
+                        <div style="color: #2563eb;">${responses.conservation}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Boutons -->
+            <div style="text-align: center; padding-top: 30px; border-top: 2px solid #e2e8f0;">
+                <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button onclick="downloadDPIAPDF('${templateId}')" style="background: #2563eb; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-file-pdf"></i> Télécharger PDF
+                    </button>
+                    <button onclick="window.print()" style="background: white; color: #2563eb; border: 2px solid #2563eb; padding: 12px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-print"></i> Imprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    step3.innerHTML = html;
+    
+    // Sauvegarder
+    const dpiaData = {
+        template: templateId,
+        score: scoreResult.score,
+        niveau: scoreResult.niveau,
+        color: scoreResult.couleur,
+        responses: responses,
+        groq_content: dpiaContent,
+        tokens: tokensUsed
+    };
+    
+    saveDPIAHistory(dpiaData);
+}
+
+function displayBasicDPIA(templateId, responses, scoreResult) {
+    // Ton ancien code (fallback)
+    const step3 = document.getElementById('dpia-step3');
+    
+        // Fallback simple
+    const fallbackHTML = `
+        <div style="margin-bottom: 20px;">
+            <button onclick="showDPIAStep1()" style="background: none; border: none; color: #2563eb; cursor: pointer; font-size: 14px;">
+                ← Nouvelle DPIA
+            </button>
+        </div>
+        
+        <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+            <div style="text-align: center; margin-bottom: 40px;">
+                <div style="display: inline-block; background: ${scoreResult.couleur}; color: white; padding: 8px 20px; border-radius: 20px; margin-bottom: 15px; font-weight: 600;">
+                    SCORE : ${scoreResult.score}/100 - ${scoreResult.niveau}
+                </div>
+                <h1 style="color: #1e293b; margin-bottom: 10px;">
+                    DPIA - ${templateId.charAt(0).toUpperCase() + templateId.slice(1)}
+                </h1>
+                <p style="color: #64748b;">Généré le ${new Date().toLocaleDateString('fr-FR')}</p>
+            </div>
+            
+            <div style="background: #f8fafc; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h3 style="color: #1e293b; margin-bottom: 15px;">📊 Votre profil</h3>
+                <p><strong>Volume:</strong> ${responses.volume} traitements/mois</p>
+                <p><strong>Données:</strong> ${responses.donnees}</p>
+                <p><strong>Automatisation:</strong> ${responses.automation}%</p>
+                <p><strong>Conservation:</strong> ${responses.conservation}</p>
+                <p><strong>Accès:</strong> ${responses.acces.join(', ')}</p>
+            </div>
+            
+            <div style="background: #f0f9ff; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h3 style="color: #1e293b; margin-bottom: 15px;">📝 Recommandations</h3>
+                <ol style="color: #475569; padding-left: 20px; margin: 0; line-height: 1.6;">
+                    <li>Documenter les critères de décision</li>
+                    <li>Mettre en place un audit trimestriel</li>
+                    <li>Informer clairement les personnes concernées</li>
+                    ${scoreResult.score < 60 ? '<li>Revue complète de la conformité nécessaire</li>' : ''}
+                </ol>
+            </div>
+            
+            <div style="text-align: center;">
+                <p style="color: #64748b; font-style: italic;">
+                    ⚠️ Mode fallback activé - La génération IA n'est pas disponible.
+                </p>
+            </div>
+        </div>
+    `;
+    
+   step3.innerHTML = fallbackHTML;
+step3.style.display = 'block';
+    
+    const dpiaData = {
+        template: templateId,
+        score: scoreResult.score,
+        niveau: scoreResult.niveau,
+        color: scoreResult.couleur,
+        responses: responses
+    };
+    
+    saveDPIAHistory(dpiaData);
+}
 // ==================== EXPORT DES FONCTIONS ====================
 
 window.showDPIAStep1 = showDPIAStep1;
@@ -768,3 +979,6 @@ window.downloadDPIAPDF = downloadDPIAPDF;
 window.updateDPIAAfterLogin = updateDPIAAfterLogin;
 window.showHomePage = showHomePage;
 window.handleDPIANavClick = handleDPIANavClick;
+window.generateDPIAWithGroq = generateDPIAWithGroq;
+window.displayGroqDPIA = displayGroqDPIA;
+window.displayBasicDPIA = displayBasicDPIA;
