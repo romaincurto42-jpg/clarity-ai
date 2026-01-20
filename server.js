@@ -91,18 +91,27 @@ app.post('/api/analyze', async (req, res) => {
           }),
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log('✅ Analyse Groq réussie');
-          return res.json({
-            success: true,
-            analysis: data.choices[0].message.content,
-            ai_model: 'groq-llama3-70b',
-            analyzedAt: new Date().toISOString(),
-            company: companyName || 'Non spécifié',
-            tokens: data.usage.total_tokens
-          });
-        }
+       console.log('📊 Status Groq:', response.status, response.statusText);
+
+if (response.ok) {
+  const data = await response.json();
+  console.log('✅ Analyse Groq réussie');
+  console.log('📝 Tokens utilisés:', data.usage?.total_tokens);
+  return res.json({
+    success: true,
+    analysis: data.choices[0].message.content,
+    ai_model: 'groq-llama3-70b',
+    analyzedAt: new Date().toISOString(),
+    company: companyName || 'Non spécifié',
+    tokens: data.usage.total_tokens
+  });
+} else {
+  // CAPTURE L'ERREUR EXACTE
+  const errorText = await response.text();
+  console.log('❌ Erreur Groq détaillée:', errorText);
+  console.log('❌ Headers:', JSON.stringify(Object.fromEntries(response.headers.entries())));
+  throw new Error(`Groq API error: ${response.status}`);
+}
       } catch (apiError) {
         console.log('Groq API error:', apiError.message);
         // Continue vers la simulation
