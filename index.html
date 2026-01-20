@@ -553,9 +553,12 @@
                <nav>
     <a href="index.html" class="active" data-i18n="nav.home">Accueil</a>
     <a href="features.html" data-i18n="nav.features">Fonctionnalités</a>
-    <a href="javascript:void(0)" onclick="handleDPIANavClick()" id="dpia-tab" style="display: none;">
-        <i class="fas fa-file-contract"></i> <span data-i18n="nav.dpia">DPIA</span>
-    </a>
+   <a href="javascript:void(0)" onclick="handleDPIANavClick()" id="dpia-tab" style="display: none;">
+    <i class="fas fa-file-contract"></i> <span data-i18n="nav.dpia">DPIA</span>
+</a>
+<a href="javascript:void(0)" onclick="showDPIAHistory()" id="history-tab" style="display: none;">
+    <i class="fas fa-history"></i> <span data-i18n="nav.history">Historique</span>
+</a>
     <a href="pricing.html" data-i18n="nav.pricing">Tarifs</a>
     <a href="contact.html" data-i18n="nav.contact">Contact</a>
     <a href="dashboard.html" id="dashboard-link" style="display: none;">
@@ -684,6 +687,29 @@
                 <div id="dpia-step3" style="display: none;">
                     <!-- Résultat ici -->
                 </div>
+            </div>
+        </section>
+                
+        <!-- ========== SECTION HISTORIQUE DPIA ========== -->
+        <section id="history-section" class="analyzer" style="display: none;">
+            <div style="margin-bottom: 20px;">
+                <button onclick="showHomePage()" style="background: none; border: none; color: #2563eb; cursor: pointer; font-size: 14px;">
+                    <i class="fas fa-arrow-left"></i> <span data-i18n="history.back">Retour à l'accueil</span>
+                </button>
+            </div>
+            
+            <h2 class="section-title">
+                <i class="fas fa-history"></i> <span data-i18n="history.title">Historique des DPIA</span>
+            </h2>
+            
+            <div id="history-content">
+                <div id="history-empty" style="text-align: center; padding: 60px 20px; color: #64748b;">
+                    <i class="fas fa-inbox" style="font-size: 48px; margin-bottom: 20px;"></i>
+                    <h3 data-i18n="history.empty">Aucune DPIA générée</h3>
+                    <p data-i18n="history.empty_desc">Vos DPIA générées apparaîtront ici</p>
+                </div>
+                
+                <div id="history-list" style="display: none;"></div>
             </div>
         </section>
         <!-- ========== FIN SECTION DPIA ========== -->
@@ -917,7 +943,7 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
             updateUserUI(user);
         }
 
-      function updateUserUI(user) {
+    function updateUserUI(user) {
     const authBtn = document.getElementById('auth-btn');
     if (authBtn) {
         authBtn.innerHTML = `<i class="fas fa-user-check"></i> ${user.name}`;
@@ -926,6 +952,11 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
         const dashboardLink = document.getElementById('dashboard-link');
         if (dashboardLink) {
             dashboardLink.style.display = 'inline';
+        }
+        
+        const historyTab = document.getElementById('history-tab');
+        if (historyTab) {
+            historyTab.style.display = 'inline-block'; // Affiche Historique
         }
         
         authBtn.onclick = function() {
@@ -937,15 +968,13 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
         };
     }
     
-    // ========== AJOUT POUR LA DPIA ==========
     // Activer la DPIA après connexion
     if (typeof updateDPIAAfterLogin === 'function') {
         updateDPIAAfterLogin();
     }
-    // ========== FIN AJOUT ==========
 }
-
-        // ==================== SAUVEGARDER LES ANALYSES ====================
+    
+// ==================== SAUVEGARDER LES ANALYSES ====================
         function saveAnalysis(analysisData) {
             // Récupérer l'utilisateur
             const userStr = localStorage.getItem('clarity_user');
