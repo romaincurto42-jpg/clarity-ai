@@ -788,7 +788,73 @@ generateDPIAWithGroq(templateId, responses, scoreResult);
         alert('Erreur lors de la génération de la DPIA');
     }
 }
+// ==================== GROQ DPIA SIMPLIFIÉE ====================
 
+async function generateDPIAWithGroq(templateId, responses, scoreResult) {
+    try {
+        console.log('🤖 Génération DPIA avec Groq...');
+        
+        // Template amélioré
+        const templateInfo = {
+            'recrutement': { name: 'Recrutement & RH', icon: '👥' },
+            'sante': { name: 'Santé & Médical', icon: '🏥' },
+            'finance': { name: 'Finance & Banque', icon: '💰' }
+        }[templateId] || { name: templateId.toUpperCase(), icon: '📋' };
+        
+        // PROMPT AMÉLIORÉ
+        const enhancedPrompt = `Génère un Document d'Impact sur la Protection des Données (DPIA) RGPD complet.
+
+Type de système : ${templateInfo.name}
+Score de risque : ${scoreResult.score}/100 (${scoreResult.niveau})
+
+DÉTAILS :
+• Volume : ${responses.volume} traitements/mois
+• Données : ${responses.donnees}
+• Automatisation : ${responses.automation}%
+• Conservation : ${responses.conservation}
+• Accès : ${responses.acces.join(', ')}
+
+FORMAT PROFESSIONNEL :
+1. Identification du traitement
+2. Description détaillée
+3. Base légale (Article 6 RGPD)
+4. Analyse des risques
+5. Mesures techniques et organisationnelles
+6. Droits des personnes concernées
+7. Plan d'action
+8. Validation et suivi
+
+En français, citations articles RGPD, recommandations actionnables.`;
+
+        // Appeler l'API
+        const response = await fetch('https://clarity-ai-4zhg.onrender.com/api/generate-dpia', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                template: templateId,
+                responses: responses,
+                score: scoreResult,
+                prompt: enhancedPrompt 
+            })
+        });
+
+        if (!response.ok) throw new Error('Erreur API');
+        
+        const data = await response.json();
+        
+        if (data.success && data.dpia) {
+            // Utiliser la fonction displayGroqDPIA (qui existe déjà)
+            displayGroqDPIA(templateId, responses, scoreResult, data.dpia, data.tokens);
+        } else {
+            // Fallback
+            displayBasicDPIA(templateId, responses, scoreResult);
+        }
+
+    } catch (error) {
+        console.error('❌ Erreur Groq DPIA:', error);
+        displayBasicDPIA(templateId, responses, scoreResult);
+    }
+}
 function downloadDPIAPDF(templateId) {
     console.log('📥 Génération PDF améliorée pour:', templateId);
     
