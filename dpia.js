@@ -1019,59 +1019,310 @@ step3.style.display = 'block';
 }
 
 function downloadDPIAPDF(templateId) {
-    console.log('📥 Génération PDF pour:', templateId);
+    console.log('📥 Génération PDF professionnel pour:', templateId);
     
-    // Créer le contenu HTML pour le PDF
-    const dpiaContent = document.getElementById('dpia-step3').innerHTML;
+    // 1. RÉCUPÉRER TOUT LE CONTENU
+    let dpiaContent = '';
     
-    // Créer une nouvelle fenêtre pour l'impression
-    const printWindow = window.open('', '_blank');
+    // Option A : Récupérer le contenu amélioré (nouveau format)
+    const enhancedContainer = document.querySelector('.dpia-enhanced-container');
+    if (enhancedContainer) {
+        console.log('✅ Capture du format amélioré');
+        dpiaContent = enhancedContainer.outerHTML;
+    } 
+    // Option B : Récupérer l'ancien format
+    else {
+        const step3 = document.getElementById('dpia-step3');
+        if (step3) {
+            console.log('⚠️ Capture du format classique');
+            dpiaContent = step3.innerHTML;
+        } else {
+            alert('❌ Impossible de trouver le contenu DPIA');
+            return;
+        }
+    }
+    
+    // 2. CRÉER UNE PAGE DÉDIÉE POUR L'IMPRESSION
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
+    
+    // 3. ÉCRIRE LE HTML COMPLET OPTIMISÉ POUR PDF
     printWindow.document.write(`
         <!DOCTYPE html>
         <html lang="fr">
         <head>
             <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>DPIA - ${templateId.toUpperCase()}</title>
             <style>
-                body { font-family: Arial, sans-serif; padding: 20px; }
-                .header { text-align: center; margin-bottom: 30px; }
-                .score { background: #2563eb; color: white; padding: 10px 20px; border-radius: 20px; display: inline-block; margin-bottom: 15px; }
-                .section { margin-bottom: 25px; }
-                .responses { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
-                .response-box { border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
-                .recommendations { background: #f0f9ff; padding: 20px; border-radius: 10px; }
+                /* === RESET === */
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    line-height: 1.6;
+                    color: #1e293b;
+                    padding: 25px;
+                    background: white;
+                    max-width: 1000px;
+                    margin: 0 auto;
+                }
+                
+                /* === EN-TÊTE PROFESSIONNEL === */
+                .pdf-header {
+                    text-align: center;
+                    margin-bottom: 40px;
+                    padding-bottom: 25px;
+                    border-bottom: 4px solid #2563eb;
+                }
+                
+                .pdf-title {
+                    color: #1e293b;
+                    font-size: 28px;
+                    margin-bottom: 10px;
+                    font-weight: 700;
+                }
+                
+                .pdf-subtitle {
+                    color: #64748b;
+                    font-size: 16px;
+                    margin-bottom: 15px;
+                }
+                
+                .pdf-meta {
+                    color: #475569;
+                    font-size: 14px;
+                    margin: 8px 0;
+                }
+                
+                /* === CONTENU PRINCIPAL === */
+                .pdf-content {
+                    margin: 30px 0;
+                }
+                
+                /* === ADAPTATION DU CONTENU DPIA POUR PDF === */
+                .dpia-enhanced-container {
+                    all: initial !important;
+                    font-family: inherit !important;
+                    background: white !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    width: 100% !important;
+                    overflow: visible !important;
+                    display: block !important;
+                }
+                
+                /* Cache les éléments inutiles en PDF */
+                .dpia-sidebar,
+                .dpia-actions-sidebar,
+                .dpia-actions-enhanced,
+                .btn-primary, .btn-secondary, .btn-success, .btn-info,
+                .btn-outline,
+                button[onclick] {
+                    display: none !important;
+                }
+                
+                /* Layout simplifié pour PDF */
+                .dpia-content-wrapper {
+                    display: block !important;
+                    grid-template-columns: none !important;
+                    gap: 0 !important;
+                }
+                
+                /* Contenu principal visible */
+                .dpia-main-content {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    font-size: 13px !important;
+                    line-height: 1.5 !important;
+                    overflow: visible !important;
+                    height: auto !important;
+                }
+                
+                /* Métadonnées compactes */
+                .dpia-metadata {
+                    flex-direction: column !important;
+                    align-items: flex-start !important;
+                    margin-bottom: 20px !important;
+                    padding-bottom: 15px !important;
+                    border-bottom: 2px solid #e2e8f0 !important;
+                }
+                
+                .dpia-stats {
+                    margin-top: 10px !important;
+                    font-size: 11px !important;
+                }
+                
+                /* Checklist visible */
+                .dpia-checklist {
+                    margin: 25px 0 !important;
+                    padding: 20px !important;
+                    border: 1px solid #bae6fd !important;
+                    background: #f8fafc !important;
+                    page-break-inside: avoid;
+                }
+                
+                /* === OPTIMISATION POUR IMPRESSION === */
                 @media print {
-                    button { display: none !important; }
-                    .no-print { display: none !important; }
+                    body {
+                        padding: 15px !important;
+                        font-size: 12px !important;
+                    }
+                    
+                    .pdf-title {
+                        font-size: 24px !important;
+                    }
+                    
+                    .no-print {
+                        display: none !important;
+                    }
+                    
+                    /* Évite les coupures dans les titres */
+                    h4, h5 {
+                        page-break-after: avoid;
+                        page-break-inside: avoid;
+                    }
+                    
+                    /* Force l'affichage complet */
+                    .dpia-main-content {
+                        max-height: none !important;
+                        overflow: visible !important;
+                    }
+                }
+                
+                /* === CONTROLES UTILISATEUR === */
+                .pdf-controls {
+                    text-align: center;
+                    margin: 30px 0;
+                    padding: 25px;
+                    background: #f1f5f9;
+                    border-radius: 10px;
+                    border: 1px solid #cbd5e1;
+                }
+                
+                .pdf-button {
+                    background: #2563eb;
+                    color: white;
+                    border: none;
+                    padding: 14px 28px;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    margin: 0 10px;
+                    transition: all 0.3s;
+                }
+                
+                .pdf-button:hover {
+                    background: #1d4ed8;
+                    transform: translateY(-2px);
+                }
+                
+                .pdf-button.secondary {
+                    background: #64748b;
+                }
+                
+                .instructions {
+                    margin-top: 20px;
+                    color: #475569;
+                    font-size: 14px;
+                    max-width: 600px;
+                    margin-left: auto;
+                    margin-right: auto;
                 }
             </style>
         </head>
         <body>
-            <div class="header">
-                <h1>DPIA - ${templateId.charAt(0).toUpperCase() + templateId.slice(1)}</h1>
-                <p>Document généré le ${new Date().toLocaleDateString('fr-FR')}</p>
+            <!-- EN-TÊTE PROFESSIONNEL -->
+            <div class="pdf-header">
+                <h1 class="pdf-title">📋 Document d'Impact sur la Protection des Données (DPIA)</h1>
+                <div class="pdf-subtitle">${templateId.charAt(0).toUpperCase() + templateId.slice(1)}</div>
+                <div class="pdf-meta">Conforme à l'Article 35 du Règlement Général sur la Protection des Données (RGPD)</div>
+                <div class="pdf-meta">Généré le ${new Date().toLocaleDateString('fr-FR', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })} via Clarity AI</div>
             </div>
             
-            <div style="margin-bottom: 20px;" class="no-print">
-                <button onclick="window.print()" style="background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+            <!-- CONTROLES POUR L'UTILISATEUR -->
+            <div class="pdf-controls no-print">
+                <button class="pdf-button" onclick="window.print()">
                     🖨️ Imprimer / Sauvegarder en PDF
                 </button>
-                <button onclick="window.close()" style="background: #64748b; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-left: 10px;">
-                    Fermer
+                <button class="pdf-button secondary" onclick="window.close()">
+                    ✕ Fermer cette fenêtre
                 </button>
+                
+                <div class="instructions">
+                    <p><strong>💡 Instructions pour exporter en PDF :</strong></p>
+                    <ol style="text-align: left; margin: 15px auto; max-width: 500px;">
+                        <li>Cliquez sur <strong>"Imprimer / Sauvegarder en PDF"</strong></li>
+                        <li>Dans la fenêtre d'impression, sélectionnez <strong>"Enregistrer au format PDF"</strong></li>
+                        <li>Choisissez l'orientation <strong>"Portrait"</strong></li>
+                        <li>Optionnel : ajustez les marges à <strong>"Défaut"</strong></li>
+                        <li>Cliquez sur <strong>"Enregistrer"</strong></li>
+                    </ol>
+                </div>
             </div>
             
-            ${dpiaContent}
+            <!-- CONTENU COMPLET DE LA DPIA -->
+            <div class="pdf-content">
+                ${dpiaContent}
+            </div>
             
+            <!-- PIED DE PAGE PROFESSIONNEL -->
+            <div style="
+                text-align: center; 
+                margin-top: 50px; 
+                padding-top: 20px; 
+                border-top: 2px solid #e2e8f0; 
+                color: #64748b; 
+                font-size: 12px;
+                page-break-inside: avoid;
+            ">
+                <p><strong>Document officiel de conformité RGPD</strong></p>
+                <p>Conservez ce document pendant toute la durée du traitement des données</p>
+                <p>Clarity AI - Solution de conformité RGPD & AI Act - www.clarity-ai.fr</p>
+            </div>
+            
+            <!-- SCRIPT D'AIDE -->
             <script>
+                // Afficher les instructions au chargement
                 window.onload = function() {
-                    alert("Pour sauvegarder en PDF :\\n1. Cliquez sur 'Imprimer / Sauvegarder en PDF'\\n2. Dans la fenêtre d'impression, choisissez 'Enregistrer au format PDF'\\n3. Sélectionnez l'emplacement et enregistrez");
-                }
+                    // Petite pause puis instructions
+                    setTimeout(function() {
+                        alert("📄 PRÊT POUR L'EXPORT PDF !\\n\\n" +
+                              "1. Cliquez sur le bouton 'Imprimer / Sauvegarder en PDF'\\n" +
+                              "2. Choisissez 'Microsoft Print to PDF' ou 'Enregistrer au format PDF'\\n" +
+                              "3. Sélectionnez 'Portrait' comme orientation\\n" +
+                              "4. Enregistrez votre fichier\\n\\n" +
+                              "✅ Votre DPIA complet sera sauvegardé !");
+                    }, 800);
+                    
+                    // Focus sur la fenêtre
+                    window.focus();
+                };
+                
+                // Auto-impression après 5 secondes (optionnel - décommente si tu veux)
+                // setTimeout(function() {
+                //     window.print();
+                // }, 5000);
             <\/script>
         </body>
         </html>
     `);
+    
     printWindow.document.close();
+    
+    // Focus sur la nouvelle fenêtre
+    setTimeout(() => {
+        printWindow.focus();
+    }, 300);
 }
 
 // Fonction pour mettre à jour la DPIA après connexion
