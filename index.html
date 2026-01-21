@@ -1,6 +1,14 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+     <script>
+    // Version ultra-simple - redirige toujours sauf si skip=1
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('skip') !== '1') {
+        window.location.href = "landing.html";
+    }
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clarity AI | Conformité AI Act & RGPD</title>
