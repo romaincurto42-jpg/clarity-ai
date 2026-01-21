@@ -732,7 +732,7 @@ function generateDPIAResult(templateId) {
                             <div style="color: #2563eb; font-weight: 500;">${responses.automation}%</div>
                         </div>
                         
-                        <div style="background: #f8fafc; padding: 15px; border-radius=8px;">
+                       <div style="background: #f8fafc; padding: 15px; border-radius: 8px;">
                             <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">⏳ Conservation</div>
                             <div style="color: #2563eb; font-weight: 500;">${responses.conservation}</div>
                         </div>
@@ -864,4 +864,479 @@ function displayGroqDPIA(templateId, responses, scoreResult, dpiaContent, tokens
     
     const html = `
         <div style="margin-bottom: 20px;">
-            <button onclick="showDPIAStep1()" style="background: none; border: none; color: #2563eb; cursor
+            <button onclick="showDPIAStep1()" style="background: none; border: none; color: #2563eb; cursor: pointer; font-size: 14px;">
+                ← Nouvelle DPIA
+            </button>
+        </div>
+        
+        <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+            <!-- En-tête -->
+            <div style="text-align: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 2px solid #e2e8f0;">
+                <div style="display: inline-block; background: ${scoreResult.couleur}; color: white; padding: 8px 20px; border-radius: 20px; margin-bottom: 15px; font-weight: 600;">
+                    SCORE : ${scoreResult.score}/100 - ${scoreResult.niveau}
+                </div>
+                <h1 style="color: #1e293b; margin-bottom: 10px; font-size: 28px;">
+                    📋 DPIA COMPLÈTE - ${templateId.charAt(0).toUpperCase() + templateId.slice(1)}
+                </h1>
+                <div style="color: #64748b; font-size: 14px;">
+                    <i class="fas fa-calendar"></i> ${new Date().toLocaleDateString('fr-FR')} | 
+                    <i class="fas fa-brain"></i> Généré par IA
+                </div>
+            </div>
+            
+            <!-- Contenu Groq -->
+            <div style="
+                background: #f8fafc; 
+                padding: 30px; 
+                border-radius: 12px;
+                white-space: pre-wrap;
+                font-family: 'Georgia', serif;
+                line-height: 1.8;
+                color: #1e293b;
+                border-left: 4px solid #2563eb;
+                max-height: 600px;
+                overflow-y: auto;
+                margin-bottom: 30px;
+            ">
+                ${dpiaContent}
+            </div>
+            
+            <!-- Résumé -->
+            <div style="background: #f0f9ff; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h3 style="color: #1e293b; margin-bottom: 15px;">📊 Votre profil</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="background: white; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">Volume</div>
+                        <div style="color: #2563eb;">${responses.volume}/mois</div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">Données</div>
+                        <div style="color: #2563eb;">${responses.donnees}</div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">Automatisation</div>
+                        <div style="color: #2563eb;">${responses.automation}%</div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">Conservation</div>
+                        <div style="color: #2563eb;">${responses.conservation}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Boutons -->
+            <div style="text-align: center; padding-top: 30px; border-top: 2px solid #e2e8f0;">
+                <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;">
+                    <button onclick="downloadDPIAPDF('${templateId}')" style="background: #2563eb; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-file-pdf"></i> Télécharger PDF
+                    </button>
+                    <button onclick="window.print()" style="background: white; color: #2563eb; border: 2px solid #2563eb; padding: 12px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-print"></i> Imprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    step3.innerHTML = html;
+    
+    // Sauvegarder
+    const dpiaData = {
+        template: templateId,
+        score: scoreResult.score,
+        niveau: scoreResult.niveau,
+        color: scoreResult.couleur,
+        responses: responses,
+        groq_content: dpiaContent,
+        tokens: tokensUsed
+    };
+    
+    saveDPIAHistory(dpiaData);
+}
+
+function displayBasicDPIA(templateId, responses, scoreResult) {
+    // Ton ancien code (fallback)
+    const step3 = document.getElementById('dpia-step3');
+    
+        // Fallback simple
+    const fallbackHTML = `
+        <div style="margin-bottom: 20px;">
+            <button onclick="showDPIAStep1()" style="background: none; border: none; color: #2563eb; cursor: pointer; font-size: 14px;">
+                ← Nouvelle DPIA
+            </button>
+        </div>
+        
+        <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+            <div style="text-align: center; margin-bottom: 40px;">
+                <div style="display: inline-block; background: ${scoreResult.couleur}; color: white; padding: 8px 20px; border-radius: 20px; margin-bottom: 15px; font-weight: 600;">
+                    SCORE : ${scoreResult.score}/100 - ${scoreResult.niveau}
+                </div>
+                <h1 style="color: #1e293b; margin-bottom: 10px;">
+                    DPIA - ${templateId.charAt(0).toUpperCase() + templateId.slice(1)}
+                </h1>
+                <p style="color: #64748b;">Généré le ${new Date().toLocaleDateString('fr-FR')}</p>
+            </div>
+            
+            <div style="background: #f8fafc; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h3 style="color: #1e293b; margin-bottom: 15px;">📊 Votre profil</h3>
+                <p><strong>Volume:</strong> ${responses.volume} traitements/mois</p>
+                <p><strong>Données:</strong> ${responses.donnees}</p>
+                <p><strong>Automatisation:</strong> ${responses.automation}%</p>
+                <p><strong>Conservation:</strong> ${responses.conservation}</p>
+                <p><strong>Accès:</strong> ${responses.acces.join(', ')}</p>
+            </div>
+            
+            <div style="background: #f0f9ff; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h3 style="color: #1e293b; margin-bottom: 15px;">📝 Recommandations</h3>
+                <ol style="color: #475569; padding-left: 20px; margin: 0; line-height: 1.6;">
+                    <li>Documenter les critères de décision</li>
+                    <li>Mettre en place un audit trimestriel</li>
+                    <li>Informer clairement les personnes concernées</li>
+                    ${scoreResult.score < 60 ? '<li>Revue complète de la conformité nécessaire</li>' : ''}
+                </ol>
+            </div>
+            
+            <div style="text-align: center;">
+                <p style="color: #64748b; font-style: italic;">
+                    ⚠️ Mode fallback activé - La génération IA n'est pas disponible.
+                </p>
+            </div>
+        </div>
+    `;
+    
+   step3.innerHTML = fallbackHTML;
+step3.style.display = 'block';
+    
+    const dpiaData = {
+        template: templateId,
+        score: scoreResult.score,
+        niveau: scoreResult.niveau,
+        color: scoreResult.couleur,
+        responses: responses
+    };
+    
+    saveDPIAHistory(dpiaData);
+}
+
+function downloadDPIAPDF(templateId) {
+    console.log('📥 Génération PDF pour:', templateId);
+    
+    // Créer le contenu HTML pour le PDF
+    const dpiaContent = document.getElementById('dpia-step3').innerHTML;
+    
+    // Créer une nouvelle fenêtre pour l'impression
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="fr">
+        <head>
+            <meta charset="UTF-8">
+            <title>DPIA - ${templateId.toUpperCase()}</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                .header { text-align: center; margin-bottom: 30px; }
+                .score { background: #2563eb; color: white; padding: 10px 20px; border-radius: 20px; display: inline-block; margin-bottom: 15px; }
+                .section { margin-bottom: 25px; }
+                .responses { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
+                .response-box { border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
+                .recommendations { background: #f0f9ff; padding: 20px; border-radius: 10px; }
+                @media print {
+                    button { display: none !important; }
+                    .no-print { display: none !important; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>DPIA - ${templateId.charAt(0).toUpperCase() + templateId.slice(1)}</h1>
+                <p>Document généré le ${new Date().toLocaleDateString('fr-FR')}</p>
+            </div>
+            
+            <div style="margin-bottom: 20px;" class="no-print">
+                <button onclick="window.print()" style="background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                    🖨️ Imprimer / Sauvegarder en PDF
+                </button>
+                <button onclick="window.close()" style="background: #64748b; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+                    Fermer
+                </button>
+            </div>
+            
+            ${dpiaContent}
+            
+            <script>
+                window.onload = function() {
+                    alert("Pour sauvegarder en PDF :\\n1. Cliquez sur 'Imprimer / Sauvegarder en PDF'\\n2. Dans la fenêtre d'impression, choisissez 'Enregistrer au format PDF'\\n3. Sélectionnez l'emplacement et enregistrez");
+                }
+            <\/script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+}
+
+// Fonction pour mettre à jour la DPIA après connexion
+function updateDPIAAfterLogin() {
+    checkDPIAccess();
+}
+// ==================== HISTORIQUE DPIA ====================
+
+// Afficher l'historique
+function showDPIAHistory() {
+    console.log('📜 Affichage historique DPIA');
+    
+    // Cacher toutes les sections
+    document.querySelectorAll('.analyzer').forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Afficher la section historique
+    const historySection = document.getElementById('history-section');
+    if (historySection) {
+        historySection.style.display = 'block';
+        
+        // Charger l'historique
+        loadDPIAHistory();
+        
+        // Scroll vers la section
+        historySection.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+// Charger l'historique depuis localStorage
+function loadDPIAHistory() {
+    const history = JSON.parse(localStorage.getItem('dpia_history') || '[]');
+    const historyList = document.getElementById('history-list');
+    const historyEmpty = document.getElementById('history-empty');
+    
+    if (!historyList || !historyEmpty) return;
+    
+    if (history.length === 0) {
+        historyList.style.display = 'none';
+        historyEmpty.style.display = 'block';
+        return;
+    }
+    
+    // Trier par date (plus récent d'abord)
+    history.sort((a, b) => new Date(b.timestamp || b.date) - new Date(a.timestamp || a.date));
+    
+    // Générer le HTML
+    let html = '<div style="display: grid; gap: 15px;">';
+    
+    history.forEach(item => {
+        html += `
+            <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-left: 4px solid ${item.color || '#2563eb'};">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                    <div>
+                        <h4 style="color: #1e293b; margin-bottom: 5px;">
+                            DPIA - ${item.template ? item.template.charAt(0).toUpperCase() + item.template.slice(1) : 'Inconnu'}
+                        </h4>
+                        <p style="color: #64748b; font-size: 14px;">
+                            <i class="far fa-calendar"></i> ${item.date || 'Date inconnue'}
+                        </p>
+                    </div>
+                    <div style="background: ${item.color || '#2563eb'}; color: white; padding: 4px 12px; border-radius: 20px; font-weight: 600; font-size: 14px;">
+                        ${item.score || '0'}/100
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button onclick="viewDPIAHistory(${item.id})" style="background: #2563eb; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                        <i class="fas fa-eye"></i> Voir
+                    </button>
+                    <button onclick="deleteDPIAHistory(${item.id})" style="background: #f1f5f9; color: #64748b; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer;">
+                        <i class="fas fa-trash"></i> Supprimer
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    
+    historyList.innerHTML = html;
+    historyList.style.display = 'block';
+    historyEmpty.style.display = 'none';
+}
+
+// Sauvegarder une DPIA dans l'historique
+function saveDPIAHistory(dpiaData) {
+    if (!dpiaData) return;
+    
+    let history = JSON.parse(localStorage.getItem('dpia_history') || '[]');
+    
+    history.unshift({
+        id: Date.now(),
+        date: new Date().toLocaleDateString('fr-FR'),
+        timestamp: new Date().toISOString(),
+        template: dpiaData.template || 'unknown',
+        score: dpiaData.score || 0,
+        niveau: dpiaData.niveau || 'INCONNU',
+        color: dpiaData.color || '#2563eb',
+        responses: dpiaData.responses || {}
+    });
+    
+    // Garder seulement les 20 dernières
+    if (history.length > 20) {
+        history = history.slice(0, 20);
+    }
+    
+    localStorage.setItem('dpia_history', JSON.stringify(history));
+    console.log('✅ DPIA sauvegardée dans l\'historique');
+}
+
+
+// Voir une DPIA de l'historique
+function viewDPIAHistory(id) {
+        // Cacher l'accueil (section hero)
+    const heroSection = document.querySelector('.hero');
+    if (heroSection) heroSection.style.display = 'none';
+    
+    // Cacher toutes les autres sections analyzer
+    document.querySelectorAll('.analyzer').forEach(section => {
+        if (section.id !== 'history-section') {
+            section.style.display = 'none';
+        }
+    });
+    // Montrer la section DPIA d'abord
+    const dpiaSection = document.getElementById('dpia-section');
+    if (dpiaSection) {
+        dpiaSection.style.display = 'block';
+    }
+    // Récupérer l'historique
+    let history = JSON.parse(localStorage.getItem('dpia_history') || '[]');
+    
+    // Trouver la DPIA avec cet ID
+    const dpia = history.find(item => item.id == id);
+    
+    if (!dpia) {
+        alert('DPIA non trouvée');
+        return;
+    }
+    
+    // Cacher les autres sections
+    document.getElementById('dpia-step1').style.display = 'none';
+    document.getElementById('dpia-step2').style.display = 'none';
+    document.getElementById('history-section').style.display = 'none';
+    
+    // Afficher la section résultat
+    const step3 = document.getElementById('dpia-step3');
+    step3.style.display = 'block';
+    
+    // Générer le HTML de la DPIA
+    const dpiaHTML = `
+        <div style="margin-bottom: 20px;">
+            <button onclick="showDPIAHistory()" style="background: none; border: none; color: #2563eb; cursor: pointer; font-size: 14px;">
+                ← Retour à l'historique
+            </button>
+        </div>
+        
+        <div style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
+            <!-- En-tête avec score -->
+            <div style="text-align: center; margin-bottom: 40px; padding-bottom: 30px; border-bottom: 2px solid #e2e8f0;">
+                <div style="display: inline-block; background: ${dpia.color}; color: white; padding: 8px 20px; border-radius: 20px; margin-bottom: 15px; font-weight: 600;">
+                    SCORE : ${dpia.score}/100 - ${dpia.niveau}
+                </div>
+                <h1 style="color: #1e293b; margin-bottom: 10px; font-size: 28px;">
+                    DPIA - ${dpia.template.charAt(0).toUpperCase() + dpia.template.slice(1)}
+                </h1>
+                <p style="color: #64748b; margin-bottom: 5px;">
+                    Document généré le ${dpia.date}
+                </p>
+            </div>
+            
+            <!-- Détail du score -->
+            <div style="background: #f8fafc; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h3 style="color: #1e293b; margin-bottom: 15px;">📊 Analyse du score</h3>
+                <p style="color: #475569; margin-bottom: 10px;">
+                    Votre système a obtenu un score de <strong>${dpia.score}/100</strong>.
+                    ${dpia.score >= 80 ? 'Bon niveau de conformité.' : 
+                      dpia.score >= 60 ? 'Améliorations recommandées.' : 
+                      'Actions correctives nécessaires.'}
+                </p>
+            </div>
+            
+            <!-- Vos réponses -->
+            <div style="margin-bottom: 40px;">
+                <h2 style="color: #1e293b; margin-bottom: 20px; font-size: 20px;">
+                    <i class="fas fa-clipboard-check"></i> Vos réponses
+                </h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">📊 Volume</div>
+                        <div style="color: #2563eb; font-weight: 500;">${dpia.responses.volume} traitements/mois</div>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">🔒 Données</div>
+                        <div style="color: #2563eb; font-weight: 500;">${dpia.responses.donnees}</div>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">🤖 Automation</div>
+                        <div style="color: #2563eb; font-weight: 500;">${dpia.responses.automation}%</div>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 600; color: #1e293b; margin-bottom: 5px;">⏳ Conservation</div>
+                        <div style="color: #2563eb; font-weight: 500;">${dpia.responses.conservation}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recommandations -->
+            <div style="background: #f0f9ff; padding: 25px; border-radius: 12px; margin-bottom: 40px;">
+                <h3 style="color: #1e293b; margin-bottom: 15px; font-size: 18px;">
+                    <i class="fas fa-check-circle"></i> Recommandations
+                </h3>
+                <ol style="color: #475569; padding-left: 20px; margin: 0; line-height: 1.6;">
+                    <li>Documenter les critères de décision</li>
+                    <li>Mettre en place un audit trimestriel</li>
+                    <li>Informer clairement les personnes concernées</li>
+                    ${dpia.score < 60 ? '<li>Revue complète de la conformité nécessaire</li>' : ''}
+                </ol>
+            </div>
+            
+            <!-- Actions -->
+            <div style="text-align: center; padding-top: 30px; border-top: 2px solid #e2e8f0;">
+                <div style="display: flex; gap: 15px; justify-content: center; margin-bottom: 20px;">
+                    <button onclick="downloadDPIAPDF('${dpia.template}')" style="background: #2563eb; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-file-pdf"></i> Télécharger PDF
+                    </button>
+                    <button onclick="window.print()" style="background: white; color: #2563eb; border: 2px solid #2563eb; padding: 12px 25px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-print"></i> Imprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Afficher la DPIA
+    step3.innerHTML = dpiaHTML;
+    
+    // Scroll vers le résultat
+    step3.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Supprimer une DPIA de l'historique
+function deleteDPIAHistory(id) {
+    if (!confirm('Supprimer cette DPIA de l\'historique ?')) return;
+    
+    let history = JSON.parse(localStorage.getItem('dpia_history') || '[]');
+    history = history.filter(item => item.id !== id);
+    localStorage.setItem('dpia_history', JSON.stringify(history));
+    
+    loadDPIAHistory();
+}
+
+// ==================== EXPORT DES FONCTIONS ====================
+
+window.showDPIAStep1 = showDPIAStep1;
+window.generateDPIAResult = generateDPIAResult;
+window.downloadDPIAPDF = downloadDPIAPDF;
+window.updateDPIAAfterLogin = updateDPIAAfterLogin;
+window.showHomePage = showHomePage;
+window.handleDPIANavClick = handleDPIANavClick;
+window.generateDPIAWithGroq = generateDPIAWithGroq;
+window.displayGroqDPIA = displayGroqDPIA;
+window.displayBasicDPIA = displayBasicDPIA;
