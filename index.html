@@ -1008,95 +1008,491 @@ Notre plateforme utilise l'IA pour analyser les CV des candidats et attribuer un
             console.log('📊 Analyse sauvegardée pour', user.name);
         }
         
-        // ==================== FONCTION PRINCIPALE ====================
-        async function analyze() {
-            const company = document.getElementById('company').value;
-            const text = document.getElementById('text').value;
-            const resultDiv = document.getElementById('result');
-            const resultContent = document.getElementById('result-content');
-            const loadingDiv = document.getElementById('loading');
-            const analyzeBtn = document.getElementById('analyze-btn');
+       // ==================== FONCTION PRINCIPALE - OPTIMISÉE POUR API GROQ ====================
+async function analyze() {
+    const company = document.getElementById('company').value;
+    const text = document.getElementById('text').value;
+    const resultDiv = document.getElementById('result');
+    const resultContent = document.getElementById('result-content');
+    const loadingDiv = document.getElementById('loading');
+    const analyzeBtn = document.getElementById('analyze-btn');
+    
+    // Validation
+    if (!text.trim()) {
+        alert('Veuillez décrire votre système d\'IA');
+        return;
+    }
+    
+    // État initial
+    resultDiv.style.display = 'none';
+    loadingDiv.style.display = 'block';
+    analyzeBtn.disabled = true;
+    analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyse en cours...';
+    
+    try {
+        // Appel à l'API Groq (TON API QUI MARCHE)
+        const response = await fetch(`${API_BASE_URL}/api/analyze`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                text: text,
+                companyName: company,
+                detailed: true,
+                timestamp: new Date().toISOString()
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Erreur API: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // TRAITEMENT DU RÉSULTAT DE L'API GROQ
+            console.log('✅ Réponse API Groq reçue:', data);
             
-            // Validation
-            if (!text.trim()) {
-                alert('Veuillez décrire votre système d\'IA');
-                return;
-            }
-            
-            // État initial
-            resultDiv.style.display = 'none';
-            loadingDiv.style.display = 'block';
-            analyzeBtn.disabled = true;
-            analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyse en cours...';
-            
-            try {
-                // Appel à l'API Render
-                const response = await fetch(`${API_BASE_URL}/api/analyze`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        text: text,
-                        companyName: company
-                    })
+            // Vérifier si l'API a retourné un format structuré
+            if (data.analysis && typeof data.analysis === 'string') {
+                // Analyse détaillée avec l'API Groq
+                const enhancedHTML = await enhanceGroqAnalysis(data.analysis, text, company);
+                resultContent.innerHTML = enhancedHTML;
+                
+                // Sauvegarder l'analyse
+                saveAnalysis({
+                    company: company,
+                    content: text,
+                    summary: data.analysis.substring(0, 200) + '...',
+                    riskLevel: extractRiskFromGroq(data.analysis),
+                    articles: extractArticlesFromGroq(data.analysis)
                 });
                 
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Afficher le résultat
-                    const analysisHTML = marked.parse(data.analysis);
-                    resultContent.innerHTML = analysisHTML;
-                    
-                    // Sauvegarder l'analyse si l'utilisateur est connecté
-                    saveAnalysis({
-                        company: company,
-                        content: text,
-                        summary: data.analysis.substring(0, 200) + '...'
-                    });
-                    
-                    resultDiv.style.display = 'block';
-                    
-                    // Animation
-                    resultDiv.style.opacity = '0';
-                    resultDiv.style.transform = 'translateY(20px)';
-                    setTimeout(() => {
-                        resultDiv.style.transition = 'all 0.5s ease';
-                        resultDiv.style.opacity = '1';
-                        resultDiv.style.transform = 'translateY(0)';
-                    }, 100);
-                    
-                } else {
-                    throw new Error(data.error || 'Erreur serveur');
-                }
-                
-            } catch (error) {
-                // Mode démo en cas d'erreur
-                resultContent.innerHTML = `
-                    <h3>📋 Rapport de conformité AI Act (Mode démo)</h3>
-                    <p><strong>Entreprise :</strong> ${company || 'Non spécifiée'}</p>
-                    <p><strong>Système analysé :</strong> "${text.substring(0, 100)}${text.length > 100 ? '...' : ''}"</p>
-                    <hr>
-                    <p><strong>Niveau de risque :</strong> MOYEN</p>
-                    <p><strong>Articles AI Act concernés :</strong> Article 6, Article 10, Article 13</p>
-                    <p><strong>Recommandations :</strong></p>
-                    <ol>
-                        <li>Documentation technique du système</li>
-                        <li>Évaluation d'impact sur la protection des données (DPIA)</li>
-                        <li>Mise en place de mécanismes de transparence</li>
-                        <li>Audit régulier des algorithmes</li>
-                    </ol>
-                    <p><em>Note : Cette analyse est générée en mode démo. La connexion avec l'API IA est disponible en production.</em></p>
-                `;
-                resultDiv.style.display = 'block';
-            } finally {
-                // Réinitialiser l'interface
-                loadingDiv.style.display = 'none';
-                analyzeBtn.disabled = false;
-                analyzeBtn.innerHTML = '<i class="fas fa-microscope"></i> Analyser la Conformité';
+            } else {
+                // Format inattendu - fallback
+                resultContent.innerHTML = marked.parse(data.analysis || 'Pas de résultat');
             }
+            
+            resultDiv.style.display = 'block';
+            
+            // Animation
+            resultDiv.style.opacity = '0';
+            resultDiv.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                resultDiv.style.transition = 'all 0.5s ease';
+                resultDiv.style.opacity = '1';
+                resultDiv.style.transform = 'translateY(0)';
+            }, 100);
+            
+        } else {
+            throw new Error(data.error || 'Erreur serveur');
         }
+        
+    } catch (error) {
+        console.error('Erreur lors de l\'analyse:', error);
+        
+        // Fallback intelligent - toujours avec analyse locale
+        resultContent.innerHTML = `
+            <div style="background: #fffbeb; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #f59e0b;">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <strong>Connexion API limitée :</strong> Utilisation du mode analyse avancée local.
+            </div>
+            ${generateLocalEnhancedAudit(text, company)}
+        `;
+        resultDiv.style.display = 'block';
+        
+    } finally {
+        // Réinitialiser l'interface
+        loadingDiv.style.display = 'none';
+        analyzeBtn.disabled = false;
+        analyzeBtn.innerHTML = '<i class="fas fa-microscope"></i> Analyser la Conformité';
+    }
+}
+
+// ==================== AMÉLIORATION DE LA RÉPONSE GROQ ====================
+async function enhanceGroqAnalysis(groqResult, originalText, company) {
+    // Extraire les données structurées de la réponse Groq
+    const riskLevel = extractRiskFromGroq(groqResult);
+    const aiArticles = extractArticlesFromGroq(groqResult);
+    const riskScore = calculateRiskScore(originalText);
+    const gdprArticles = identifyGDPRArticles(originalText);
+    const recommendations = generateSmartRecommendations(originalText, riskLevel);
+    
+    // Structure HTML améliorée
+    return `
+        <div class="enhanced-audit">
+            <!-- En-tête -->
+            <div class="audit-header" style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #2563eb;">
+                <h2 style="color: #1e293b; margin-bottom: 10px;">
+                    <i class="fas fa-robot"></i> AUDIT AI ACT & RGPD - Analyse IA
+                </h2>
+                <div style="display: flex; justify-content: center; gap: 20px; margin-top: 15px; flex-wrap: wrap;">
+                    <div style="background: ${getRiskColor(riskLevel)}; color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold;">
+                        RISQUE: ${riskLevel}
+                    </div>
+                    <div style="background: #8b5cf6; color: white; padding: 8px 15px; border-radius: 20px;">
+                        <i class="fas fa-bolt"></i> Powered by Groq AI
+                    </div>
+                    <div style="background: #f1f5f9; padding: 8px 15px; border-radius: 20px;">
+                        📅 ${new Date().toLocaleDateString('fr-FR')}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Métadonnées -->
+            <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <div style="font-size: 12px; color: #64748b; margin-bottom: 5px;">ENTREPRISE</div>
+                        <div style="font-weight: 600; font-size: 18px;">${company || 'Non spécifiée'}</div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <div style="font-size: 12px; color: #64748b; margin-bottom: 5px;">SCORE DE RISQUE</div>
+                        <div style="font-weight: 600; font-size: 18px; color: ${getRiskColor(riskLevel)};">
+                            ${riskScore}/10
+                        </div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <div style="font-size: 12px; color: #64748b; margin-bottom: 5px;">ARTICLES CONCERNÉS</div>
+                        <div style="font-weight: 600; font-size: 18px;">${aiArticles.length}</div>
+                    </div>
+                    <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <div style="font-size: 12px; color: #64748b; margin-bottom: 5px;">RÉFÉRENCE</div>
+                        <div style="font-weight: 600; font-size: 18px; color: #2563eb;">
+                            GROQ-${Date.now().toString().slice(-6)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analyse Groq (résultat brut formaté) -->
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #1e293b; border-left: 4px solid #10b981; padding-left: 15px; margin-bottom: 15px;">
+                    <i class="fas fa-brain"></i> Analyse IA Groq
+                </h3>
+                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 25px; line-height: 1.6;">
+                    ${marked.parse(groqResult)}
+                </div>
+            </div>
+            
+            <!-- Matrice de conformité -->
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #1e293b; border-left: 4px solid #8b5cf6; padding-left: 15px; margin-bottom: 15px;">
+                    <i class="fas fa-th-list"></i> Matrice de conformité
+                </h3>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <!-- AI Act -->
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                            <div style="background: #8b5cf6; color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h4 style="margin: 0; color: #1e293b;">AI Act</h4>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-size: 12px; color: #64748b;">ARTICLES APPLICABLES</div>
+                            <div style="font-weight: 600; color: #1e293b;">${aiArticles.map(a => a.number).join(', ')}</div>
+                        </div>
+                        <div style="padding: 10px; background: #f8f4ff; border-radius: 6px; font-size: 14px;">
+                            ${aiArticles.slice(0, 3).map(a => 
+                                `<div style="margin-bottom: 8px;">• ${a.number}: ${a.title}</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- RGPD -->
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                            <div style="background: #10b981; color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h4 style="margin: 0; color: #1e293b;">RGPD</h4>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-size: 12px; color: #64748b;">POINTS DE VIGILANCE</div>
+                            <div style="font-weight: 600; color: #1e293b;">${gdprArticles.length} points</div>
+                        </div>
+                        <div style="padding: 10px; background: #f0fdf4; border-radius: 6px; font-size: 14px;">
+                            ${gdprArticles.slice(0, 3).map(a => 
+                                `<div style="margin-bottom: 8px;">• ${a.number}: ${a.title}</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Priorités -->
+                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                            <div style="background: #f59e0b; color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <h4 style="margin: 0; color: #1e293b;">PRIORITÉS</h4>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-size: 12px; color: #64748b;">ACTIONS URGENTES</div>
+                            <div style="font-weight: 600; color: #1e293b;">${recommendations.priority.length} actions</div>
+                        </div>
+                        <div style="padding: 10px; background: #fffbeb; border-radius: 6px; font-size: 14px;">
+                            ${recommendations.priority.slice(0, 2).map((rec, i) => 
+                                `<div style="margin-bottom: 8px;">${i+1}. ${rec}</div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Plan d'action intelligent -->
+            <div style="margin-bottom: 30px;">
+                <h3 style="color: #1e293b; border-left: 4px solid #f59e0b; padding-left: 15px; margin-bottom: 15px;">
+                    <i class="fas fa-road"></i> Feuille de route
+                </h3>
+                
+                <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 25px; border-radius: 12px; margin-bottom: 20px;">
+                    <h4 style="color: #92400e; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-bolt"></i> Actions immédiates (7 jours)
+                    </h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                        ${recommendations.priority.slice(0, 3).map(rec => `
+                            <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                                <div style="font-weight: 600; margin-bottom: 8px;">${rec}</div>
+                                <div style="font-size: 13px; color: #64748b;">Urgence: Élevée</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%); padding: 25px; border-radius: 12px; margin-bottom: 20px;">
+                    <h4 style="color: #1e40af; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-calendar-alt"></i> Planification (30 jours)
+                    </h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                        ${recommendations.medium.slice(0, 3).map(rec => `
+                            <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                                <div style="font-weight: 600; margin-bottom: 8px;">${rec}</div>
+                                <div style="font-size: 13px; color: #64748b;">Échéance: 30 jours</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pied de page -->
+            <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 14px;">
+                <p style="margin-bottom: 10px;">
+                    <i class="fas fa-bolt" style="color: #8b5cf6;"></i> 
+                    <strong>Analyse générée par Groq AI</strong> - Modèle Mixtral 8x7B
+                </p>
+                <p>
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Cette analyse est fournie à titre indicatif. Consultez un expert juridique pour validation.
+                </p>
+                <p style="margin-top: 15px;">
+                    Clarity AI • Audit généré le ${new Date().toLocaleString('fr-FR')}
+                </p>
+            </div>
+        </div>
+    `;
+}
+
+// ==================== FONCTIONS D'EXTRACTION POUR GROQ ====================
+function extractRiskFromGroq(groqText) {
+    // Essaie d'extraire le niveau de risque du texte Groq
+    const riskPatterns = [
+        /risque.*?(élevé|moyen|faible)/i,
+        /niveau.*?(élevé|moyen|faible)/i,
+        /(élevé|moyen|faible).*?risque/i
+    ];
+    
+    for (const pattern of riskPatterns) {
+        const match = groqText.match(pattern);
+        if (match) {
+            const level = match[1].toUpperCase();
+            return ['ÉLEVÉ', 'MOYEN', 'FAIBLE'].includes(level) ? level : 'MOYEN';
+        }
+    }
+    
+    // Fallback basé sur le contenu
+    if (groqText.includes('élevé') || groqText.includes('haut') || groqText.includes('important')) return 'ÉLEVÉ';
+    if (groqText.includes('faible') || groqText.includes('bas') || groqText.includes('limit')) return 'FAIBLE';
+    return 'MOYEN';
+}
+
+function extractArticlesFromGroq(groqText) {
+    const articles = [];
+    const articleMatches = groqText.match(/Article\s+\d+/g);
+    
+    if (articleMatches) {
+        const uniqueArticles = [...new Set(articleMatches)].slice(0, 5);
+        uniqueArticles.forEach(art => {
+            articles.push({
+                number: art,
+                title: getArticleTitle(art),
+                requirement: getArticleRequirement(art)
+            });
+        });
+    }
+    
+    // Articles par défaut si non trouvés
+    if (articles.length === 0) {
+        articles.push(
+            { number: 'Article 6', title: 'Systèmes à risque élevé', requirement: 'Conformité renforcée' },
+            { number: 'Article 10', title: 'Données d\'entraînement', requirement: 'Qualité des datasets' },
+            { number: 'Article 13', title: 'Décisions automatisées', requirement: 'Droit à l\'explication' }
+        );
+    }
+    
+    return articles;
+}
+
+function getArticleTitle(articleNumber) {
+    const titles = {
+        'Article 5': 'Principes généraux',
+        'Article 6': 'Systèmes à risque élevé',
+        'Article 7': 'Transparence',
+        'Article 10': 'Données d\'entraînement',
+        'Article 13': 'Décisions automatisées',
+        'Article 16': 'Conformité',
+        'Article 27': 'Évaluation d\'impact',
+        'Article 52': 'Information des utilisateurs'
+    };
+    return titles[articleNumber] || 'Obligation de conformité';
+}
+
+function getArticleRequirement(articleNumber) {
+    const requirements = {
+        'Article 5': 'Loyauté, robustesse, sécurité',
+        'Article 6': 'Évaluation de conformité obligatoire',
+        'Article 10': 'Qualité et représentativité des données',
+        'Article 13': 'Explication des décisions automatisées',
+        'Article 27': 'Analyse d\'impact fondamentale',
+        'Article 52': 'Transparence sur l\'utilisation d\'IA'
+    };
+    return requirements[articleNumber] || 'Respect des exigences réglementaires';
+}
+
+function calculateRiskScore(text) {
+    let score = 0;
+    const lower = text.toLowerCase();
+    
+    if (lower.includes('décision automatisée')) score += 3;
+    if (lower.includes('santé') || lower.includes('médical')) score += 3;
+    if (lower.includes('biométrique') || lower.includes('reconnaissance')) score += 4;
+    if (lower.includes('scoring') || lower.includes('crédit')) score += 3;
+    if (lower.includes('enfant') || lower.includes('mineur')) score += 2;
+    if (lower.includes('données sensibles')) score += 2;
+    if (lower.includes('conservation')) score += 1;
+    
+    return Math.min(score, 10);
+}
+
+// ==================== FONCTIONS UTILITAIRES (garder de l'ancien) ====================
+function getRiskColor(level) {
+    switch(level) {
+        case 'ÉLEVÉ': return '#ef4444';
+        case 'MOYEN': return '#f59e0b';
+        case 'FAIBLE': return '#10b981';
+        default: return '#64748b';
+    }
+}
+
+function identifyGDPRArticles(text) {
+    const articles = [];
+    const lower = text.toLowerCase();
+    
+    if (lower.includes('donnée personnelle')) {
+        articles.push({ number: 'Article 5', title: 'Principes relatifs au traitement', description: 'Loyauté, licéité, transparence' });
+    }
+    if (lower.includes('consentement')) {
+        articles.push({ number: 'Article 7', title: 'Conditions du consentement', description: 'Libre, spécifique, éclairé' });
+    }
+    if (lower.includes('décision automatisée')) {
+        articles.push({ number: 'Article 22', title: 'Décision individuelle automatisée', description: 'Droit à l\'intervention humaine' });
+    }
+    
+    return articles.length > 0 ? articles : [
+        { number: 'Article 24', title: 'Responsabilité', description: 'Mesures appropriées' },
+        { number: 'Article 32', title: 'Sécurité', description: 'Mesures techniques et organisationnelles' },
+        { number: 'Article 35', title: 'AIPD', description: 'Analyse d\'impact' }
+    ];
+}
+
+function generateSmartRecommendations(text, riskLevel) {
+    const priority = [];
+    const medium = [];
+    const bestPractices = [];
+    
+    // Priorités basées sur le risque
+    if (riskLevel === 'ÉLEVÉ') {
+        priority.push('Réaliser une DPIA (Analyse d\'impact) immédiatement');
+        priority.push('Mettre en place un comité d\'éthique IA');
+        priority.push('Documenter les algorithmes et tests de biais');
+    } else {
+        priority.push('Évaluer la nécessité d\'une DPIA');
+        priority.push('Créer un registre de traitement IA');
+        priority.push('Former les équipes aux obligations AI Act');
+    }
+    
+    // Recommandations contextuelles
+    if (text.toLowerCase().includes('recrutement')) {
+        priority.push('Auditer les algorithmes pour discrimination potentielle');
+        medium.push('Implémenter un droit à l\'explication pour les candidats');
+    }
+    
+    if (text.toLowerCase().includes('santé')) {
+        priority.push('Valider la certification médicale du système');
+        priority.push('Sécuriser les données de santé (hébergement agréé)');
+    }
+    
+    // Recommandations générales
+    medium.push('Établir une gouvernance IA');
+    medium.push('Mettre en place une veille réglementaire');
+    medium.push('Désigner un responsable conformité IA');
+    
+    bestPractices.push('Maintenir une documentation à jour');
+    bestPractices.push('Audits réguliers des systèmes');
+    bestPractices.push('Transparence auprès des utilisateurs');
+    bestPractices.push('Tests de robustesse et sécurité');
+    
+    return { priority, medium, bestPractices };
+}
+
+// ==================== FALLBACK LOCAL AMÉLIORÉ ====================
+function generateLocalEnhancedAudit(text, company) {
+    const riskScore = calculateRiskScore(text);
+    const riskLevel = riskScore >= 7 ? 'ÉLEVÉ' : riskScore >= 4 ? 'MOYEN' : 'FAIBLE';
+    const recommendations = generateSmartRecommendations(text, riskLevel);
+    
+    return `
+        <div style="background: white; padding: 30px; border-radius: 15px; border: 1px solid #e2e8f0;">
+            <h3 style="color: #1e293b; margin-bottom: 20px; text-align: center;">
+                📊 Analyse de conformité avancée
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                <div style="text-align: center; padding: 15px; background: #f8fafc; border-radius: 10px;">
+                    <div style="font-size: 24px; color: ${getRiskColor(riskLevel)}; font-weight: bold;">${riskScore}/10</div>
+                    <div style="font-size: 12px; color: #64748b;">Score de risque</div>
+                </div>
+                <div style="text-align: center; padding: 15px; background: #f8fafc; border-radius: 10px;">
+                    <div style="font-size: 24px; color: #2563eb; font-weight: bold;">${recommendations.priority.length}</div>
+                    <div style="font-size: 12px; color: #64748b;">Actions prioritaires</div>
+                </div>
+            </div>
+            
+            <h4 style="color: #1e293b; margin-bottom: 15px;">
+                <i class="fas fa-exclamation-circle"></i> Recommandations clés
+            </h4>
+            <ul style="padding-left: 20px; margin-bottom: 25px;">
+                ${recommendations.priority.map(rec => `<li style="margin-bottom: 10px;">${rec}</li>`).join('')}
+            </ul>
+            
+            <div style="text-align: center; font-size: 13px; color: #64748b; margin-top: 20px;">
+                <i class="fas fa-sync-alt"></i> Pour une analyse IA complète, vérifiez la connexion à l'API Groq
+            </div>
+        </div>
+    `;
+}
 
         // ==================== INSCRIPTION SIMPLE ====================
         function handleSignUp() {
@@ -1363,3 +1759,4 @@ saveReport = function() {
 <script src="dpia.js"></script>
 </body>
 </html>
+
