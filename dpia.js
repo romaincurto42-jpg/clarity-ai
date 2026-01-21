@@ -790,59 +790,275 @@ generateDPIAWithGroq(templateId, responses, scoreResult);
 }
 
 function downloadDPIAPDF(templateId) {
-    console.log('📥 Génération PDF pour:', templateId);
+    console.log('📥 Génération PDF améliorée pour:', templateId);
     
-    // Créer le contenu HTML pour le PDF
-    const dpiaContent = document.getElementById('dpia-step3').innerHTML;
+    // Récupère TOUT le contenu DPIA
+    let dpiaContent = '';
     
-    // Créer une nouvelle fenêtre pour l'impression
+    // Essaie d'abord de récupérer le contenu amélioré
+    const enhancedContainer = document.querySelector('.dpia-enhanced-container');
+    if (enhancedContainer) {
+        console.log('✅ Utilisation du contenu amélioré');
+        dpiaContent = enhancedContainer.outerHTML;
+    } else {
+        // Fallback : récupère l'ancien format
+        const step3 = document.getElementById('dpia-step3');
+        if (step3) {
+            dpiaContent = step3.innerHTML;
+        } else {
+            alert('❌ Aucun contenu DPIA trouvé');
+            return;
+        }
+    }
+    
+    // Crée une page COMPLÈTE pour l'impression
     const printWindow = window.open('', '_blank');
+    
+    // Template HTML optimisé pour l'impression
     printWindow.document.write(`
         <!DOCTYPE html>
         <html lang="fr">
         <head>
             <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>DPIA - ${templateId.toUpperCase()}</title>
             <style>
-                body { font-family: Arial, sans-serif; padding: 20px; }
-                .header { text-align: center; margin-bottom: 30px; }
-                .score { background: #2563eb; color: white; padding: 10px 20px; border-radius: 20px; display: inline-block; margin-bottom: 15px; }
-                .section { margin-bottom: 25px; }
-                .responses { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
-                .response-box { border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
-                .recommendations { background: #f0f9ff; padding: 20px; border-radius: 10px; }
+                /* Reset pour impression */
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: 'Arial', sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                    padding: 20px;
+                    background: white;
+                }
+                
+                /* En-tête */
+                .print-header {
+                    text-align: center;
+                    margin-bottom: 30px;
+                    padding-bottom: 20px;
+                    border-bottom: 3px solid #2563eb;
+                }
+                
+                .print-title {
+                    color: #1e293b;
+                    font-size: 24px;
+                    margin-bottom: 10px;
+                }
+                
+                .print-meta {
+                    color: #64748b;
+                    font-size: 14px;
+                    margin-bottom: 10px;
+                }
+                
+                .print-score {
+                    display: inline-block;
+                    background: #2563eb;
+                    color: white;
+                    padding: 8px 20px;
+                    border-radius: 20px;
+                    font-weight: bold;
+                    margin: 10px 0;
+                }
+                
+                /* Contenu DPIA */
+                .dpia-content-print {
+                    margin: 30px 0;
+                    max-width: 100%;
+                    overflow: visible !important;
+                }
+                
+                /* Styles pour le contenu amélioré */
+                .dpia-enhanced-container {
+                    background: white !important;
+                    border: 1px solid #ddd !important;
+                    box-shadow: none !important;
+                    margin: 0 !important;
+                    padding: 20px !important;
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    overflow: visible !important;
+                }
+                
+                .dpia-content-wrapper {
+                    display: block !important;
+                    grid-template-columns: none !important;
+                    gap: 0 !important;
+                }
+                
+                .dpia-sidebar {
+                    display: none !important; /* Cache la sidebar en PDF */
+                }
+                
+                .dpia-main-content {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    overflow: visible !important;
+                    font-size: 14px !important;
+                    line-height: 1.5 !important;
+                }
+                
+                .dpia-actions-enhanced,
+                .dpia-actions-sidebar,
+                .btn-primary,
+                .btn-secondary,
+                .btn-success,
+                .btn-info {
+                    display: none !important; /* Cache les boutons */
+                }
+                
+                .dpia-metadata {
+                    flex-direction: column !important;
+                    align-items: flex-start !important;
+                    margin-bottom: 20px !important;
+                    padding-bottom: 10px !important;
+                }
+                
+                .dpia-stats {
+                    margin-top: 10px !important;
+                    font-size: 12px !important;
+                }
+                
+                /* Checklist visible */
+                .dpia-checklist {
+                    page-break-inside: avoid;
+                    margin: 20px 0 !important;
+                    padding: 15px !important;
+                    border: 1px solid #bae6fd !important;
+                    background: #f0f9ff !important;
+                }
+                
+                /* Pour éviter les coupures */
+                h4, h5, .section {
+                    page-break-after: avoid;
+                    page-break-inside: avoid;
+                }
+                
+                /* Boutons d'impression */
+                .print-controls {
+                    text-align: center;
+                    margin: 20px 0;
+                    padding: 20px;
+                    background: #f8fafc;
+                    border-radius: 8px;
+                }
+                
+                .print-btn {
+                    background: #2563eb;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 6px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    margin: 0 10px;
+                    display: inline-block;
+                }
+                
+                .print-btn:hover {
+                    background: #1d4ed8;
+                }
+                
+                .close-btn {
+                    background: #64748b;
+                }
+                
+                /* Media query pour impression */
                 @media print {
-                    button { display: none !important; }
-                    .no-print { display: none !important; }
+                    .print-controls {
+                        display: none !important;
+                    }
+                    
+                    body {
+                        padding: 10px !important;
+                    }
+                    
+                    .dpia-main-content {
+                        font-size: 12px !important;
+                    }
+                    
+                    .dpia-checklist {
+                        border: 1px solid #ccc !important;
+                    }
+                    
+                    /* Force l'affichage complet */
+                    .dpia-enhanced-container {
+                        height: auto !important;
+                        overflow: visible !important;
+                        page-break-inside: avoid;
+                    }
+                    
+                    .dpia-main-content {
+                        height: auto !important;
+                        max-height: none !important;
+                        overflow: visible !important;
+                    }
                 }
             </style>
         </head>
         <body>
-            <div class="header">
-                <h1>DPIA - ${templateId.charAt(0).toUpperCase() + templateId.slice(1)}</h1>
-                <p>Document généré le ${new Date().toLocaleDateString('fr-FR')}</p>
+            <!-- En-tête d'impression -->
+            <div class="print-header">
+                <h1 class="print-title">📋 DPIA - ${templateId.charAt(0).toUpperCase() + templateId.slice(1)}</h1>
+                <div class="print-meta">
+                    Document généré le ${new Date().toLocaleDateString('fr-FR')} via Clarity AI
+                </div>
+                <div class="print-meta">
+                    Conforme RGPD - Article 35 - Analyse d'Impact
+                </div>
             </div>
             
-            <div style="margin-bottom: 20px;" class="no-print">
-                <button onclick="window.print()" style="background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+            <!-- Contrôles d'impression -->
+            <div class="print-controls no-print">
+                <button class="print-btn" onclick="window.print()">
                     🖨️ Imprimer / Sauvegarder en PDF
                 </button>
-                <button onclick="window.close()" style="background: #64748b; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-left: 10px;">
-                    Fermer
+                <button class="print-btn close-btn" onclick="window.close()">
+                    ✕ Fermer
                 </button>
+                <p style="margin-top: 10px; color: #64748b; font-size: 14px;">
+                    <strong>Instructions :</strong> Cliquez sur "Imprimer" puis sélectionnez "Enregistrer au format PDF"
+                </p>
             </div>
             
-            ${dpiaContent}
+            <!-- Contenu DPIA COMPLET -->
+            <div class="dpia-content-print">
+                ${dpiaContent}
+            </div>
             
+            <!-- Pied de page -->
+            <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 12px;">
+                <p>Document généré par Clarity AI - Conformité RGPD & AI Act</p>
+                <p>Conservez ce document pendant toute la durée du traitement et pour justifier de votre conformité</p>
+            </div>
+            
+            <!-- Script pour lancer l'impression automatiquement après 1s -->
             <script>
-                window.onload = function() {
-                    alert("Pour sauvegarder en PDF :\\n1. Cliquez sur 'Imprimer / Sauvegarder en PDF'\\n2. Dans la fenêtre d'impression, choisissez 'Enregistrer au format PDF'\\n3. Sélectionnez l'emplacement et enregistrez");
-                }
+                // Affiche les instructions
+                setTimeout(function() {
+                    alert("Pour sauvegarder en PDF :\\n1. Cliquez sur 'Imprimer / Sauvegarder en PDF'\\n2. Dans la fenêtre d'impression, choisissez 'Enregistrer au format PDF'\\n3. Sélectionnez l'orientation 'Portrait'\\n4. Cliquez sur 'Enregistrer'");
+                    
+                    // Auto-impression après 3 secondes (optionnel)
+                    // setTimeout(() => window.print(), 3000);
+                }, 500);
             <\/script>
         </body>
         </html>
     `);
+    
     printWindow.document.close();
+    
+    // Focus sur la fenêtre
+    setTimeout(() => {
+        printWindow.focus();
+    }, 1000);
 }
 
 // Fonction pour mettre à jour la DPIA après connexion
